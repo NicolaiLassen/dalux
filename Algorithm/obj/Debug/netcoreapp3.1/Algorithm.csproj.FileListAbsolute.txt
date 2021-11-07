@@ -1,0 +1,56 @@
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.exe
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.deps.json
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.runtimeconfig.json
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.runtimeconfig.dev.json
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.pdb
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.csprojAssemblyReference.cache
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.csproj.CoreCompileInputs.cache
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.AssemblyInfoInputs.cache
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.AssemblyInfo.cs
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.pdb
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.genruntimeconfig.cache
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.csproj.CopyComplete
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Compute.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Core.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Graphics.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Input.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Mathematics.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.OpenAL.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Windowing.Common.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Windowing.Desktop.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Windowing.GraphicsLibraryFramework.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\runtimes\linux-x64\native\libglfw.so.3.3
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\runtimes\osx-x64\native\libglfw.3.dylib
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\glfw3.dll
+C:\Users\nicol\OneDrive\Desktop\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\glfw3.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.exe
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.deps.json
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.runtimeconfig.json
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.runtimeconfig.dev.json
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.pdb
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Compute.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Core.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Graphics.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Input.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Mathematics.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.OpenAL.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Windowing.Common.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Windowing.Desktop.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\OpenTK.Windowing.GraphicsLibraryFramework.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\runtimes\linux-x64\native\libglfw.so.3.3
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\runtimes\osx-x64\native\libglfw.3.dylib
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\glfw3.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\glfw3.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.csprojAssemblyReference.cache
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.csproj.CoreCompileInputs.cache
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.AssemblyInfoInputs.cache
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.AssemblyInfo.cs
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.csproj.CopyComplete
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.dll
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.pdb
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.genruntimeconfig.cache
