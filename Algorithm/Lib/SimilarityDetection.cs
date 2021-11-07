@@ -23,11 +23,10 @@ namespace Algorithm.Lib
         {
             // voxel grid holds pointers to all contained point clusters  
             var voxelPosGrid = new Dictionary<Vector3, List<Vector3>>();
-            
-            
+
+
             // map distance
             var distanceMap = new Vector2();
-
 
             // divide points for threadpool
             // pool
@@ -39,8 +38,7 @@ namespace Algorithm.Lib
         }
 
         /// <summary>
-        /// Time complexity
-        /// P, V, 
+        /// Detection of distance overlap between cloud and mesh 
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
