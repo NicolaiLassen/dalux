@@ -6,6 +6,12 @@ namespace Algorithm.Helpers
 {
     public static class Vector3Helpers
     {
+        /// <summary>
+        /// Read Vector3 from binary 3 floats
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
         public static Vector3 FromBinary(BinaryReader reader)
         {
             const int floatSize = sizeof(float);
@@ -29,12 +35,18 @@ namespace Algorithm.Helpers
             };
         }
 
+        /// <summary>
+        /// Convert Vector3 to binary 
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="vector3"></param>
         public static void ToBinary(BinaryWriter writer, Vector3 vector3)
         {
             // write floats x,y,z
-            writer.Write(vector3.X);
-            writer.Write(vector3.Y);
-            writer.Write(vector3.Z);
+            var (x, y, z) = vector3;
+            writer.Write(x);
+            writer.Write(y);
+            writer.Write(z);
         }
     }
 }
