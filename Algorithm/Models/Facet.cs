@@ -15,17 +15,6 @@ namespace Algorithm.Models
 
         public ushort AttributeByteCount { get; set; }
 
-        public Facet()
-        {
-        }
-
-        public Facet(Vector3 normal, List<Vector3> vertices, ushort attribute = ushort.MinValue)
-        {
-            Normal = normal;
-            Vertices = vertices;
-            AttributeByteCount = attribute;
-        }
-
         public IEnumerator<Vector3> GetEnumerator()
         {
             return Vertices.GetEnumerator();
@@ -54,9 +43,8 @@ namespace Algorithm.Models
             return new Facet
             {
                 Normal = Vector3Helpers.FromBinary(reader),
-                Vertices = Enumerable.Range(0, 3).Select(o =>
-                    Vector3Helpers.FromBinary(reader)
-                ).ToList(),
+                Vertices = Enumerable.Range(0, 3)
+                    .Select(_ => Vector3Helpers.FromBinary(reader)).ToList(),
                 AttributeByteCount = reader.ReadUInt16()
             };
         }

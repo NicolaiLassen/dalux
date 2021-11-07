@@ -10,7 +10,7 @@ namespace Algorithm.Helpers
         /// Read Vector3 from binary 3 floats
         /// </summary>
         /// <param name="reader"></param>
-        /// <returns></returns>
+        /// <returns>Vector3 pos</returns>
         /// <exception cref="FormatException"></exception>
         public static Vector3 FromBinary(BinaryReader reader)
         {

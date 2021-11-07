@@ -32,8 +32,8 @@ namespace Algorithm.Lib
 
         public void SaveAsBinary(string path)
         {
-            using (Stream stream = File.Create(path))
-                WriteBinary(stream);
+            using Stream stream = File.Create(path);
+            WriteBinary(stream);
         }
 
         public static STL Read(BinaryReader reader)
@@ -55,20 +55,21 @@ namespace Algorithm.Lib
 
         private void WriteBinary(Stream stream)
         {
-            using (BinaryWriter writer = new BinaryWriter(stream, Encoding.ASCII, true))
-            {
-                byte[] header = Encoding.ASCII.GetBytes("Dalux");
-                byte[] headerFull = new byte[80];
+            // writer
+            using var writer = new BinaryWriter(stream, Encoding.ASCII, true);
 
-                Buffer.BlockCopy(header, 0, headerFull, 0, Math.Min(header.Length, headerFull.Length));
+            // buffer
+            var header = Encoding.ASCII.GetBytes("Dalux");
+            var headerFull = new byte[80];
+            var count = Math.Min(header.Length, headerFull.Length);
+            Buffer.BlockCopy(header, 0, headerFull, 0, count);
 
-                // write the header and facet count.
-                writer.Write(headerFull);
-                writer.Write((UInt32) Facets.Count);
+            // write the header and facet count.
+            writer.Write(headerFull);
+            writer.Write((uint) Facets.Count);
 
-                // write each facet.
-                Facets.ForEach(o => o.Write(writer));
-            }
+            // write each facet.
+            Facets.ForEach(o => o.Write(writer));
         }
     }
 }

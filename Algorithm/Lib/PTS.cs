@@ -16,7 +16,7 @@ namespace Algorithm.Lib
         /// Producer of point stream
         /// </summary>
         /// <returns></returns>
-        public static async Task ProduceStream()
+        public static async Task ProduceStreamAsync()
         {
         }
 
@@ -26,7 +26,7 @@ namespace Algorithm.Lib
         /// <param name="paths"></param>
         /// <param name="density"></param>
         /// <returns></returns>
-        public static async IAsyncEnumerable<Vector3> ReadStreamAsync(IEnumerable<string> paths, double density)
+        public static async IAsyncEnumerable<Vector3> ConsumeStreamAsync(IEnumerable<string> paths, double density)
         {
             // for each file path
             foreach (var path in paths)
