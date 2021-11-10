@@ -12,7 +12,7 @@ namespace Algorithm.Helpers
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static List<Vector3> VoxelizeSTL(STL mesh)
+        public static List<Vector3> VoxelizeSTL(STL mesh, double precision = 0.1)
         {
             return new List<Vector3>();
         }
