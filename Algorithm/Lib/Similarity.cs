@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Algorithm.Helpers;
+using Algorithm.Models;
 using OpenTK.Mathematics;
 
 namespace Algorithm.Lib
@@ -25,7 +26,7 @@ namespace Algorithm.Lib
 
             // voxel grid holds pointers to all contained point clusters  
             var voxelMeshPosGrid = VoxelHelper.VoxelizeSTL(mesh);
-            var voxelPosGrid = new Dictionary<Vector3, List<Vector3>>();
+            var voxelMeshCluster = new Dictionary<Vector3, MeshCluster>();
 
             // map distance
             var distanceMap = new Vector2();
@@ -37,7 +38,7 @@ namespace Algorithm.Lib
             // create thread pool
 
 
-            await DetectionAsync(pts, voxelMeshPosGrid, voxelPosGrid);
+            await DetectionAsync(pts, voxelMeshPosGrid, voxelMeshCluster);
 
             // return distance map
         }
@@ -50,7 +51,7 @@ namespace Algorithm.Lib
         private static async Task DetectionAsync(
             IAsyncEnumerable<Vector3> stream,
             List<Vector3> voxelMeshPosGrid,
-            Dictionary<Vector3, List<Vector3>> voxelPosGrid
+            Dictionary<Vector3, MeshCluster> voxelMeshCluster
         )
         {
             // P
