@@ -20,10 +20,12 @@ namespace Algorithm.Lib
             IAsyncEnumerable<Vector3> pts,
             double precision = 0.1)
         {
-            // voxel grid holds pointers to all contained point clusters  
-            var voxelPosGrid = new Dictionary<Vector3, List<Vector3>>();
+            // voxel denote point on grid with p value of depth, width, height
+            // using snaps for each point to detect cluster
 
-            VoxelHelper.VoxelizeSTL(mesh);
+            // voxel grid holds pointers to all contained point clusters  
+            var voxelMeshPosGrid = VoxelHelper.VoxelizeSTL(mesh);
+            var voxelPosGrid = new Dictionary<Vector3, List<Vector3>>();
 
             // map distance
             var distanceMap = new Vector2();
@@ -31,10 +33,13 @@ namespace Algorithm.Lib
             // divide points for threadpool
             // pool
 
-            // Create thread pool
-            await DetectionAsync(pts);
+            // TODO
+            // create thread pool
 
-            // Return distance map
+
+            await DetectionAsync(pts, voxelMeshPosGrid, voxelPosGrid);
+
+            // return distance map
         }
 
         /// <summary>
@@ -42,7 +47,11 @@ namespace Algorithm.Lib
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        private static async Task DetectionAsync(IAsyncEnumerable<Vector3> stream)
+        private static async Task DetectionAsync(
+            IAsyncEnumerable<Vector3> stream,
+            List<Vector3> voxelMeshPosGrid,
+            Dictionary<Vector3, List<Vector3>> voxelPosGrid
+        )
         {
             // P
             await foreach (var pos in stream)
