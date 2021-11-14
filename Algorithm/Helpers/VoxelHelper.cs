@@ -5,7 +5,7 @@ using OpenTK.Mathematics;
 
 namespace Algorithm.Helpers
 {
-    public class VoxelHelper
+    public static class VoxelHelper
     {
         /// <summary>
         /// 
@@ -17,14 +17,22 @@ namespace Algorithm.Helpers
             // https://link.springer.com/chapter/10.1007/978-3-030-21293-3_17
 
             var voxels = new List<Vector3>();
-            
-            
-            
+
+
             // var distance = Vector3.Distance(pos, pos);
 
 
             return voxels;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stateInfo"></param>
+        private static void Voxelize(object stateInfo)
+        {
+        }
+
 
         /// <summary>
         /// Simple cube STL Shape

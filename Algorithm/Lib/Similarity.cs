@@ -48,12 +48,11 @@ namespace Algorithm.Lib
             };
             
         }
-
+        
         /// <summary>
-        /// Detection of distance overlap between cloud and mesh 
+        /// 
         /// </summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
+        /// <param name="stateInfo"></param>
         private static async void DetectionAsync(object stateInfo)
         {
             var detectionState = (DetectionState) stateInfo;
