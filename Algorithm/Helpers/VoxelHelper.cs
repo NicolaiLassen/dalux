@@ -14,7 +14,16 @@ namespace Algorithm.Helpers
         /// <returns></returns>
         public static List<Vector3> VoxelizeSTL(STL mesh, double precision = 0.1)
         {
-            return new List<Vector3>();
+            // https://link.springer.com/chapter/10.1007/978-3-030-21293-3_17
+
+            var voxels = new List<Vector3>();
+            
+            
+            
+            // var distance = Vector3.Distance(pos, pos);
+
+
+            return voxels;
         }
 
         /// <summary>

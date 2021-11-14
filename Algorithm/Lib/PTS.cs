@@ -45,7 +45,6 @@ namespace Algorithm.Lib
                     // read more than one line to queq
 
                     // split line to access properties
-                    // don't enfear string 
                     var point = line.Split(" ");
 
                     // convert axies to 3d vector for GPU calculation

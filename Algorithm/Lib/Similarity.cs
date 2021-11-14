@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Algorithm.Helpers;
 using Algorithm.Models;
@@ -36,15 +38,15 @@ namespace Algorithm.Lib
 
             // TODO
             // create thread pool
-            
-            await DetectionAsync(
-                pts,
-                voxelMeshPosGrid,
-                voxelMeshCluster,
-                precision
-            );
 
-            // return distanceMap;
+            var detectionState = new DetectionState
+            {
+                Stream = pts,
+                VoxelMeshPosGrid = voxelMeshPosGrid,
+                VoxelMeshCluster = voxelMeshCluster,
+                Precision = precision
+            };
+            
         }
 
         /// <summary>
@@ -52,18 +54,24 @@ namespace Algorithm.Lib
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        private static async Task DetectionAsync(
-            IAsyncEnumerable<Vector3> stream,
-            List<Vector3> voxelMeshPosGrid,
-            Dictionary<Vector3, MeshCluster> voxelMeshCluster,
-            double precision = 0.1
-        )
+        private static async void DetectionAsync(object stateInfo)
         {
+            var detectionState = (DetectionState) stateInfo;
+
+            var meshPointIrregularity = new List<Vector3>();
+
             // P
-            await foreach (var pos in stream)
+            await foreach (var pos in detectionState.Stream)
             {
+                var distance = Vector3.Distance(pos, pos);
+                Console.WriteLine(distance);
                 // Compute on GPU
             }
+
+            // add found points to clusters
+            Monitor.Enter(detectionState.VoxelMeshCluster);
+            // DO WORK
+            Monitor.Exit(detectionState.VoxelMeshCluster);
         }
     }
 }

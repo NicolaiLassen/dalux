@@ -14,7 +14,7 @@ namespace Algorithm
         {
             // point stream async itr
             var ptsPaths = new[] {Path.Combine(TEMP_PATH, "mesh_not_correct.pts")};
-            var ptsStream = PTS.ConsumeStreamAsync(ptsPaths, 0.5);
+            var ptsStream = PTS.ConsumeStreamAsync(ptsPaths, 0.4);
 
             // import mesh
             var meshPath = Path.Combine(TEMP_PATH, "part1_solid_correct.STL");
