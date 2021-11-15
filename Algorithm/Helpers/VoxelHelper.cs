@@ -8,7 +8,7 @@ namespace Algorithm.Helpers
     public static class VoxelHelper
     {
         /// <summary>
-        /// 
+        /// Convert triangle mesh into voxel representation
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -16,13 +16,16 @@ namespace Algorithm.Helpers
         {
             // https://link.springer.com/chapter/10.1007/978-3-030-21293-3_17
 
-            var voxels = new List<Vector3>();
+            var voxelPoints = new List<Vector3>();
 
+            foreach (var facet in mesh)
+            {
+            }
 
             // var distance = Vector3.Distance(pos, pos);
 
 
-            return voxels;
+            return voxelPoints;
         }
 
         /// <summary>
@@ -32,7 +35,6 @@ namespace Algorithm.Helpers
         private static void Voxelize(object stateInfo)
         {
         }
-
 
         /// <summary>
         /// Simple cube STL Shape
@@ -44,18 +46,18 @@ namespace Algorithm.Helpers
         {
             // -1 and 1 center of point 
             // half the size to correct for two sided scaling
-            var halfSize = size / 2;
+            var cubeSize = size / 2;
 
             // vertices 
             // can be moved to GPU calc
-            var v1 = new Vector3(1, 1, 1) * halfSize + pos;
-            var v2 = new Vector3(-1, 1, 1) * halfSize + pos;
-            var v3 = new Vector3(-1, -1, 1) * halfSize + pos;
-            var v4 = new Vector3(1, -1, 1) * halfSize + pos;
-            var v5 = new Vector3(1, -1, -1) * halfSize + pos;
-            var v6 = new Vector3(-1, -1, -1) * halfSize + pos;
-            var v7 = new Vector3(-1, 1, -1) * halfSize + pos;
-            var v8 = new Vector3(1, 1, -1) * halfSize + pos;
+            var v1 = new Vector3(1, 1, 1) * cubeSize + pos;
+            var v2 = new Vector3(-1, 1, 1) * cubeSize + pos;
+            var v3 = new Vector3(-1, -1, 1) * cubeSize + pos;
+            var v4 = new Vector3(1, -1, 1) * cubeSize + pos;
+            var v5 = new Vector3(1, -1, -1) * cubeSize + pos;
+            var v6 = new Vector3(-1, -1, -1) * cubeSize + pos;
+            var v7 = new Vector3(-1, 1, -1) * cubeSize + pos;
+            var v8 = new Vector3(1, 1, -1) * cubeSize + pos;
 
             // normals 
             var n1 = new Vector3(0, 0, 1);

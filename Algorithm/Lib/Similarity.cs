@@ -38,6 +38,7 @@ namespace Algorithm.Lib
 
             // TODO
             // create thread pool
+            Environment.Exit(0);
 
             var detectionState = new DetectionState
             {
@@ -46,9 +47,10 @@ namespace Algorithm.Lib
                 VoxelMeshCluster = voxelMeshCluster,
                 Precision = precision
             };
-            
+
+            // DetectionAsync(detectionState);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>

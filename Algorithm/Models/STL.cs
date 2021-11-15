@@ -10,6 +10,7 @@ namespace Algorithm.Lib
     public class STL : IEnumerable<Facet>
     {
         private readonly List<Facet> Facets = new List<Facet>();
+        public BoundingBoxCoords BoundingBoxCoords = new BoundingBoxCoords();
 
         public STL()
         {
