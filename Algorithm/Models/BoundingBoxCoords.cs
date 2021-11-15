@@ -1,14 +1,17 @@
-using OpenTK.Mathematics;
-
 namespace Algorithm.Models
 {
     public class BoundingBoxCoords
     {
-        public Vector3 XMax { get; set; }
-        public Vector3 YMax { get; set; }
-        public Vector3 ZMax { get; set; }
-        public Vector3 XMin { get; set; }
-        public Vector3 YMin { get; set; }
-        public Vector3 ZMin { get; set; }
+        public float XMax { get; set; } = float.MinValue;
+        public float YMax { get; set; } = float.MinValue;
+        public float ZMax { get; set; } = float.MinValue;
+        public float XMin { get; set; } = float.MaxValue;
+        public float YMin { get; set; } = float.MaxValue;
+        public float ZMin { get; set; } = float.MaxValue;
+
+        public override string ToString()
+        {
+            return $"XMax {XMax}, YMax {YMax}, ZMax {ZMax}, XMin {XMin}, YMin {YMin}, YMin {YMin},";
+        }
     }
 }

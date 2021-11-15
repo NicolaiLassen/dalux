@@ -31,9 +31,10 @@ namespace Algorithm.Lib
             // for each file path
             foreach (var path in paths)
             {
-                // TODO AMAZON S3 STREAM
+                // open stream for path
                 using var sr = new StreamReader(path);
 
+                // line stream for path
                 while (!sr.EndOfStream)
                 {
                     // read point line
@@ -48,7 +49,7 @@ namespace Algorithm.Lib
                     var point = line.Split(" ");
 
                     // convert axies to 3d vector for GPU calculation
-                    
+
                     // TODO: use concurrent Q and sem to load N entries into the RAM
                     // Producer consumer pattern
 

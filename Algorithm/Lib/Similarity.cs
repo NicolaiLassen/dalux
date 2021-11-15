@@ -11,8 +11,7 @@ namespace Algorithm.Lib
     public static class Similarity
     {
         /// <summary>
-        /// MeshPointCloudOverlapDetection
-        /// Find a distance map from point in space ti map
+        /// Find a distance map from point in space to mesh
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="pts"></param>

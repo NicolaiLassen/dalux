@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Algorithm.Lib;
 using Algorithm.Models;
 using OpenTK.Mathematics;
@@ -8,7 +9,7 @@ namespace Algorithm.Helpers
     public static class VoxelHelper
     {
         /// <summary>
-        /// Convert triangle mesh into voxel representation
+        /// Convert triangle mesh into voxel list representation
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -16,11 +17,11 @@ namespace Algorithm.Helpers
         {
             // https://link.springer.com/chapter/10.1007/978-3-030-21293-3_17
 
+            // shared voxel data
+
             var voxelPoints = new List<Vector3>();
 
-            foreach (var facet in mesh)
-            {
-            }
+            Console.WriteLine(mesh.BoundingBoxCoords);
 
             // var distance = Vector3.Distance(pos, pos);
 
@@ -45,11 +46,10 @@ namespace Algorithm.Helpers
         public static List<Facet> CreateSTLVoxel(Vector3 pos, float size, ushort attribute = ushort.MinValue)
         {
             // -1 and 1 center of point 
-            // half the size to correct for two sided scaling
+            // half the size to correct for two sided scaling [-1...1]
             var cubeSize = size / 2;
 
             // vertices 
-            // can be moved to GPU calc
             var v1 = new Vector3(1, 1, 1) * cubeSize + pos;
             var v2 = new Vector3(-1, 1, 1) * cubeSize + pos;
             var v3 = new Vector3(-1, -1, 1) * cubeSize + pos;
