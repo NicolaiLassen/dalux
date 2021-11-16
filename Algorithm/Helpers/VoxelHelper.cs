@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Algorithm.Lib;
 using Algorithm.Models;
 using OpenTK.Mathematics;
@@ -12,7 +13,7 @@ namespace Algorithm.Helpers
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static void VoxelizeSTL(STL mesh, int resolution = 100)
+        public static bool[,,] VoxelizeSTL(STL mesh, int resolution = 100)
         {
             var bounds = mesh.Bounds;
             var maxLength =
@@ -31,7 +32,7 @@ namespace Algorithm.Helpers
             var volume = new Vector3[width, height, depth];
             var boxes = new Bounds[width, height, depth];
             var voxelSize = Vector3.One * unit;
-
+            
             for (var x = 0; x < width; x++)
             {
                 for (var y = 0; y < height; y++)
@@ -45,13 +46,14 @@ namespace Algorithm.Helpers
                 }
             }
 
-            var vertices = mesh.vertices;
-            var uvs = mesh.uv;
-            var uv00 = Vector2.zero;
-            var indices = mesh.triangles;
-            var direction = Vector3.forward;
 
-
+            return new bool[1,1,1];
+            // var vertices = mesh;
+            // var uvs = mesh.uv;
+            // var uv00 = Vector2.zero;
+            // var indices = mesh.triangles;
+            // var direction = Vector3.forward;
+            
             // var distance = Vector3.Distance(pos, pos);
         }
 

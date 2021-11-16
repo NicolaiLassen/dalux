@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Algorithm.Models;
 using OpenTK.Mathematics;
@@ -12,6 +13,7 @@ namespace Algorithm.Lib
     {
         private readonly List<Facet> Facets = new List<Facet>();
         public Bounds Bounds = new Bounds();
+        public List<Triangle> Triangles => Facets.Select(facet => facet.Triangle).ToList();
 
         public STL()
         {

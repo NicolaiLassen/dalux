@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Algorithm.Lib;
 using Algorithm.Models;
@@ -21,7 +22,7 @@ namespace Algorithm
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
 
             // generate distance Map
-            await Similarity.MeshPointCloudOverlapDetectionAsync(stl, ptsStream, 10);
+            await Similarity.MeshPointCloudIntersectionAsync(stl, ptsStream, 10);
 
             // feed distance map to shader
             var shader = Shader.ShaderFromDistanceMap();
