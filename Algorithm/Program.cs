@@ -18,7 +18,7 @@ namespace Algorithm
             var ptsStream = PTS.ConsumeStreamAsync(ptsPaths, 0.4);
 
             // import mesh
-            var meshPath = Path.Combine(TEMP_PATH, "bunny.stl");
+            var meshPath = Path.Combine(TEMP_PATH, "part1_solid_correct.stl");
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
 
             // generate distance Map

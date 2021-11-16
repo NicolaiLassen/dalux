@@ -33,7 +33,7 @@ namespace Algorithm.Lib
             var stopwatch  = new Stopwatch();
             stopwatch.Start();
             
-            var voxelMeshPosGrid = VoxelHelper.VoxelizeSTL(mesh, resolution);
+            var voxelMeshPosGrid = VoxelHelper.VoxelizeSTLGPU(mesh, resolution);
             
             stopwatch.Stop();
             Console.WriteLine(stopwatch.ElapsedMilliseconds);

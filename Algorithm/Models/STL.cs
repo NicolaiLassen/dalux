@@ -11,9 +11,10 @@ namespace Algorithm.Lib
 {
     public class STL : IEnumerable<Facet>
     {
-        private readonly List<Facet> Facets = new List<Facet>();
+        private List<Facet> Facets = new List<Facet>();
         public Bounds Bounds = new Bounds();
         public List<Triangle> Triangles => Facets.Select(facet => facet.Triangle).ToList();
+        public List<Vector3> Vertices => Facets.SelectMany(facet => facet.Vertices).ToList();
 
         public STL()
         {
@@ -32,6 +33,48 @@ namespace Algorithm.Lib
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        ///  Normalize mesh to center of XYZ from bounds
+        /// </summary>
+        public void NormalizeToCenter()
+        {
+            var facets = new List<Facet>();
+            foreach (var facet in Facets)
+            {
+                var normVerts = new List<Vector3>();
+                foreach (var facetVertex in facet.Vertices)
+                {
+                    var vector3 = Vector3.Subtract(facetVertex, Bounds.Center);
+                    normVerts.Add(vector3);
+                }
+
+                facet.Vertices = normVerts;
+                facets.Add(facet);
+            }
+
+            Facets = facets;
+        }
+
+        /// <summary>
+        /// Recalculate the bounds of the mesh
+        /// </summary>
+        public void CalculateBounds()
+        {
+            var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+
+            // update bounds for stl model
+            foreach (var facet in Facets)
+            {
+                foreach (var vertex in facet)
+                {
+                    min = Vector3.ComponentMin(min, vertex);
+                    max = Vector3.ComponentMax(max, vertex);
+                    Bounds.SetMinMax(min, max);
+                }
+            }
         }
 
         /// <summary>
@@ -54,9 +97,6 @@ namespace Algorithm.Lib
 
             Facet currentFacet;
 
-            var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-            var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-
             // read (and ignore) the header and number of triangles
             reader.ReadBytes(80);
             reader.ReadBytes(4);
@@ -67,15 +107,9 @@ namespace Algorithm.Lib
             {
                 // add facet to stl doc
                 stl.Facets.Add(currentFacet);
-
-                // set bounds for stl model
-                foreach (var vertex in currentFacet.Vertices)
-                {
-                    min = Vector3.ComponentMin(min, vertex);
-                    max = Vector3.ComponentMax(max, vertex);
-                    stl.Bounds.SetMinMax(min, max);
-                }
             }
+
+            stl.CalculateBounds();
 
             return stl;
         }

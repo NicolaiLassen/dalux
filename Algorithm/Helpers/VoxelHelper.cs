@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Algorithm.Lib;
 using Algorithm.Models;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
 namespace Algorithm.Helpers
@@ -13,59 +14,36 @@ namespace Algorithm.Helpers
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static bool[,,] VoxelizeSTL(STL mesh, int resolution = 100)
+        public static bool[,,] VoxelizeSTLGPU(STL mesh, int resolution = 100)
         {
+            // ready for GPU computations with arb shader
+            var computeNode = new ArbComputeShader();
+
+            var vertices = mesh.Vertices;
+
             var bounds = mesh.Bounds;
+            
+            Console.WriteLine(bounds);
+
             var maxLength =
                 MathHelper.Max(bounds.size.X, MathHelper.Max(bounds.size.Y, bounds.size.Z));
             var unit = maxLength / resolution;
             var hunit = unit * 0.5f;
 
-            var start = bounds.min - new Vector3(hunit, hunit, hunit);
-            var end = bounds.max + new Vector3(hunit, hunit, hunit);
-            var (fx, fy, fz) = end - start;
+            var s = bounds.min - new Vector3(hunit, hunit, hunit);
+            var e = bounds.max + new Vector3(hunit, hunit, hunit);
+            var (fx, fy, fz) = e - s;
 
-            var width = (int) MathHelper.Ceiling(fx / unit);
-            var height = (int) MathHelper.Ceiling(fy / unit);
-            var depth = (int) MathHelper.Ceiling(fz / unit);
+            var w = (int) MathHelper.Ceiling(fx / unit);
+            var h = (int) MathHelper.Ceiling(fy / unit);
+            var d = (int) MathHelper.Ceiling(fz / unit);
 
-            var volume = new Vector3[width, height, depth];
-            var boxes = new Bounds[width, height, depth];
-            var voxelSize = Vector3.One * unit;
-            
-            for (var x = 0; x < width; x++)
-            {
-                for (var y = 0; y < height; y++)
-                {
-                    for (var z = 0; z < depth; z++)
-                    {
-                        var p = new Vector3(x, y, z) * unit + start;
-                        var aabb = new Bounds(p, voxelSize);
-                        boxes[x, y, z] = aabb;
-                    }
-                }
-            }
+            // release data from GPU buffer
 
+            //
 
-            return new bool[1,1,1];
-            // var vertices = mesh;
-            // var uvs = mesh.uv;
-            // var uv00 = Vector2.zero;
-            // var indices = mesh.triangles;
-            // var direction = Vector3.forward;
-            
-            // var distance = Vector3.Distance(pos, pos);
+            return new bool[1, 1, 1];
         }
-
-        /// <summary>
-        /// Möller–Trumbore intersection algorithm
-        /// </summary>
-        /// <returns></returns>
-        // bool RayIntersectsTriangle()
-        // {
-        //     
-        // }
-
 
         /// <summary>
         /// Simple cube STL Shape
