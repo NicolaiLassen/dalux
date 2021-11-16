@@ -15,18 +15,20 @@ namespace Algorithm.Lib
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="pts"></param>
-        /// <param name="precision"></param>
+        /// <param name="resolution"></param>
         /// <returns>Distance map</returns>
         public static async Task MeshPointCloudOverlapDetectionAsync(
             STL mesh,
             IAsyncEnumerable<Vector3> pts,
-            double precision = 0.1)
+            int resolution = 100)
         {
             // voxel denote point on grid with p value of depth, width, height
             // using snaps for each point to detect cluster
 
             // voxel grid holds pointers to all contained point clusters  
-            var voxelMeshPosGrid = VoxelHelper.VoxelizeSTL(mesh, precision);
+            // var voxelMeshPosGrid = VoxelHelper.VoxelizeSTL(mesh,precision);
+
+            VoxelHelper.VoxelizeSTL(mesh, resolution);
             var voxelMeshCluster = new Dictionary<Vector3, MeshCluster>();
 
             // map distance
@@ -39,13 +41,13 @@ namespace Algorithm.Lib
             // create thread pool
             Environment.Exit(0);
 
-            var detectionState = new DetectionState
-            {
-                Stream = pts,
-                VoxelMeshPosGrid = voxelMeshPosGrid,
-                VoxelMeshCluster = voxelMeshCluster,
-                Precision = precision
-            };
+            // var detectionState = new DetectionState
+            // {
+            //     Stream = pts,
+            //     VoxelMeshPosGrid = voxelMeshPosGrid,
+            //     VoxelMeshCluster = voxelMeshCluster,
+            //     Precision = precision
+            // };
 
             // DetectionAsync(detectionState);
         }

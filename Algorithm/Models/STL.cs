@@ -11,7 +11,7 @@ namespace Algorithm.Lib
     public class STL : IEnumerable<Facet>
     {
         private readonly List<Facet> Facets = new List<Facet>();
-        public BoundingBoxCoords BoundingBoxCoords = new BoundingBoxCoords();
+        public Bounds Bounds = new Bounds();
 
         public STL()
         {
@@ -52,6 +52,9 @@ namespace Algorithm.Lib
 
             Facet currentFacet;
 
+            var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+
             // read (and ignore) the header and number of triangles
             reader.ReadBytes(80);
             reader.ReadBytes(4);
@@ -60,8 +63,16 @@ namespace Algorithm.Lib
             while (reader.BaseStream.Position != reader.BaseStream.Length &&
                    (currentFacet = Facet.Read(reader)) != null)
             {
+                // add facet to stl doc
                 stl.Facets.Add(currentFacet);
-                DecorateStlBoundingBox(stl.BoundingBoxCoords, currentFacet.Vertices);
+
+                // set bounds for stl model
+                foreach (var vertex in currentFacet.Vertices)
+                {
+                    min = Vector3.ComponentMin(min, vertex);
+                    max = Vector3.ComponentMax(max, vertex);
+                    stl.Bounds.SetMinMax(min, max);
+                }
             }
 
             return stl;
@@ -89,24 +100,6 @@ namespace Algorithm.Lib
 
             // write each facet.
             Facets.ForEach(o => o.Write(writer));
-        }
-
-        /// <summary>
-        /// Find the max and min bounds of the mesh
-        /// </summary>
-        /// <param name="currentBound"></param>
-        /// <param name="vertices"></param>
-        private static void DecorateStlBoundingBox(BoundingBoxCoords currentBound, IEnumerable<Vector3> vertices)
-        {
-            foreach (var vector3 in vertices)
-            {
-                currentBound.XMax = MathHelper.Max(currentBound.XMax, vector3[0]);
-                currentBound.YMax = MathHelper.Max(currentBound.YMax, vector3[1]);
-                currentBound.ZMax = MathHelper.Max(currentBound.ZMax, vector3[2]);
-                currentBound.XMin = MathHelper.Min(currentBound.XMin, vector3[0]);
-                currentBound.YMin = MathHelper.Min(currentBound.YMin, vector3[1]);
-                currentBound.ZMin = MathHelper.Min(currentBound.ZMin, vector3[2]);
-            }
         }
     }
 }

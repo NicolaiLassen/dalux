@@ -13,6 +13,8 @@ namespace Algorithm.Models
 
         public List<Vector3> Vertices { get; set; }
 
+        public Triangle Triangle { get; set; }
+
         public ushort AttributeByteCount { get; set; }
 
         public IEnumerator<Vector3> GetEnumerator()
@@ -39,12 +41,16 @@ namespace Algorithm.Models
 
         public static Facet Read(BinaryReader reader)
         {
-            // create the facet.
+            // create the facet
+            var normal = Vector3Helpers.FromBinary(reader);
+            var vertices = Enumerable.Range(0, 3)
+                .Select(_ => Vector3Helpers.FromBinary(reader)).ToList();
+            
             return new Facet
             {
-                Normal = Vector3Helpers.FromBinary(reader),
-                Vertices = Enumerable.Range(0, 3)
-                    .Select(_ => Vector3Helpers.FromBinary(reader)).ToList(),
+                Normal = normal,
+                Vertices = vertices,
+                Triangle = new Triangle(vertices[0], vertices[1], vertices[2]),
                 AttributeByteCount = reader.ReadUInt16()
             };
         }

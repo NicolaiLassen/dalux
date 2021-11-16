@@ -17,11 +17,11 @@ namespace Algorithm
             var ptsStream = PTS.ConsumeStreamAsync(ptsPaths, 0.4);
 
             // import mesh
-            var meshPath = Path.Combine(TEMP_PATH, "part1_solid_correct.STL");
+            var meshPath = Path.Combine(TEMP_PATH, "bunny.stl");
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
 
             // generate distance Map
-            await Similarity.MeshPointCloudOverlapDetectionAsync(stl, ptsStream, 0.1);
+            await Similarity.MeshPointCloudOverlapDetectionAsync(stl, ptsStream, 10);
 
             // feed distance map to shader
             var shader = Shader.ShaderFromDistanceMap();

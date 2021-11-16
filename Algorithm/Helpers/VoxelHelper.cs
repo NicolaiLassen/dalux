@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Algorithm.Lib;
 using Algorithm.Models;
 using OpenTK.Mathematics;
@@ -13,29 +12,58 @@ namespace Algorithm.Helpers
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static List<Vector3> VoxelizeSTL(STL mesh, double precision = 0.1)
+        public static void VoxelizeSTL(STL mesh, int resolution = 100)
         {
-            // https://link.springer.com/chapter/10.1007/978-3-030-21293-3_17
+            var bounds = mesh.Bounds;
+            var maxLength =
+                MathHelper.Max(bounds.size.X, MathHelper.Max(bounds.size.Y, bounds.size.Z));
+            var unit = maxLength / resolution;
+            var hunit = unit * 0.5f;
 
-            // shared voxel data
+            var start = bounds.min - new Vector3(hunit, hunit, hunit);
+            var end = bounds.max + new Vector3(hunit, hunit, hunit);
+            var (fx, fy, fz) = end - start;
 
-            var voxelPoints = new List<Vector3>();
+            var width = (int) MathHelper.Ceiling(fx / unit);
+            var height = (int) MathHelper.Ceiling(fy / unit);
+            var depth = (int) MathHelper.Ceiling(fz / unit);
 
-            Console.WriteLine(mesh.BoundingBoxCoords);
+            var volume = new Vector3[width, height, depth];
+            var boxes = new Bounds[width, height, depth];
+            var voxelSize = Vector3.One * unit;
+
+            for (var x = 0; x < width; x++)
+            {
+                for (var y = 0; y < height; y++)
+                {
+                    for (var z = 0; z < depth; z++)
+                    {
+                        var p = new Vector3(x, y, z) * unit + start;
+                        var aabb = new Bounds(p, voxelSize);
+                        boxes[x, y, z] = aabb;
+                    }
+                }
+            }
+
+            var vertices = mesh.vertices;
+            var uvs = mesh.uv;
+            var uv00 = Vector2.zero;
+            var indices = mesh.triangles;
+            var direction = Vector3.forward;
+
 
             // var distance = Vector3.Distance(pos, pos);
-
-
-            return voxelPoints;
         }
 
         /// <summary>
-        /// 
+        /// Möller–Trumbore intersection algorithm
         /// </summary>
-        /// <param name="stateInfo"></param>
-        private static void Voxelize(object stateInfo)
-        {
-        }
+        /// <returns></returns>
+        // bool RayIntersectsTriangle()
+        // {
+        //     
+        // }
+
 
         /// <summary>
         /// Simple cube STL Shape
