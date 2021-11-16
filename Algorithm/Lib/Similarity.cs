@@ -21,30 +21,36 @@ namespace Algorithm.Lib
         public static async Task MeshPointCloudIntersectionAsync(
             STL mesh,
             IAsyncEnumerable<Vector3> pts,
-            int resolution = 100)
+            int resolution = 100,
+            bool normalizeCenter = false)
         {
             // voxel denote point on grid with p value of depth, width, height
             // using snaps for each point to detect cluster
 
             // voxel grid holds pointers to all contained point clusters  
-            // var voxelMeshPosGrid = VoxelHelper.VoxelizeSTL(mesh,precision);
             var voxelMeshCluster = new Dictionary<Vector3, MeshCluster>();
 
-            var stopwatch  = new Stopwatch();
+            var unNormalBoundsCenter = new Vector3(mesh.Bounds.Center);
+            if (normalizeCenter)
+            {
+                mesh.NormalizeToCenter();
+            }
+
+            var stopwatch = new Stopwatch();
             stopwatch.Start();
-            
+
             var voxelMeshPosGrid = VoxelHelper.VoxelizeSTLGPU(mesh, resolution);
-            
+
             stopwatch.Stop();
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            
+
             Environment.Exit(0);
             stopwatch.Reset();
             stopwatch.Start();
-            
+
             stopwatch.Stop();
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            
+
 
             // map distance
             // var distanceMap = new List<Vector3>();
@@ -60,8 +66,12 @@ namespace Algorithm.Lib
             //     Stream = pts,
             //     VoxelMeshPosGrid = voxelMeshPosGrid,
             //     VoxelMeshCluster = voxelMeshCluster,
-            //     Precision = precision
             // };
+            //
+            // if (normalizeCenter)
+            // {
+            //     detectionState.NormalizeBoundCenter = unNormalBoundsCenter;
+            // }
 
             // DetectionAsync(detectionState);
         }

@@ -40,7 +40,10 @@ namespace Algorithm.Lib
         /// </summary>
         public void NormalizeToCenter()
         {
+            // Create new facets list
             var facets = new List<Facet>();
+
+            // subtract center from all vertexes so to start in 000
             foreach (var facet in Facets)
             {
                 var normVerts = new List<Vector3>();
@@ -55,12 +58,15 @@ namespace Algorithm.Lib
             }
 
             Facets = facets;
+
+            // reset bounds
+            CalculateBounds();
         }
 
         /// <summary>
         /// Recalculate the bounds of the mesh
         /// </summary>
-        public void CalculateBounds()
+        private void CalculateBounds()
         {
             var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);

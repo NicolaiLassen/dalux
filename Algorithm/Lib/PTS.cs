@@ -20,6 +20,9 @@ namespace Algorithm.Lib
         {
         }
 
+        
+        
+        
         /// <summary>
         ///  Consumer for point stream
         /// </summary>

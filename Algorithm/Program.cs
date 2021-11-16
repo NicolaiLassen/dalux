@@ -22,7 +22,7 @@ namespace Algorithm
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
 
             // generate distance Map
-            await Similarity.MeshPointCloudIntersectionAsync(stl, ptsStream, 10);
+            await Similarity.MeshPointCloudIntersectionAsync(stl, ptsStream, 10, true);
 
             // feed distance map to shader
             var shader = Shader.ShaderFromDistanceMap();

@@ -8,6 +8,6 @@ namespace Algorithm.Models
         public IAsyncEnumerable<Vector3> Stream { get; set; }
         public bool[,,] VoxelMeshPosGrid { get; set; }
         public Dictionary<Vector3, MeshCluster> VoxelMeshCluster { get; set; }
-        public double Precision { get; set; } = 0.1;
+        public Vector3 NormalizeBoundCenter { get; set; } = Vector3.Zero;
     }
 }
