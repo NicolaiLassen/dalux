@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Algorithm.Lib;
 using Algorithm.Models;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Compute.OpenCL;
 using OpenTK.Mathematics;
 
 namespace Algorithm.Helpers
@@ -17,13 +18,14 @@ namespace Algorithm.Helpers
         public static byte[,,] VoxelizeSTLGPU(STL mesh, int resolution = 100)
         {
             // ready for GPU computations with arb shader
-            var computeNode = new ArbComputeShader();
 
             var vertices = mesh.Vertices;
+            // var computeNode = new CLBuffer(Vector3.One);
 
+            Marshal.SizeOf(typeof(Vector3));
+            
+            
             var bounds = mesh.Bounds;
-
-            Console.WriteLine(bounds);
 
             var maxLength =
                 MathHelper.Max(bounds.size.X, MathHelper.Max(bounds.size.Y, bounds.size.Z));
@@ -47,8 +49,8 @@ namespace Algorithm.Helpers
             voxelGrid[1, 0, 0] = 0;
             voxelGrid[0, 1, 0] = 1;
             voxelGrid[0, 0, 1] = 2;
-            
-            Console.WriteLine(voxelGrid[0,1, 0]);
+
+            Console.WriteLine(voxelGrid[0, 1, 0]);
 
             return voxelGrid;
         }

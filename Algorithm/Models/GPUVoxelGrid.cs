@@ -1,6 +1,6 @@
 namespace Algorithm.Models
 {
-    public class VoxelState
+    public class GPUVoxelGrid
     {
         
     }

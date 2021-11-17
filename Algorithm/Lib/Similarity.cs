@@ -31,11 +31,12 @@ namespace Algorithm.Lib
             var voxelMeshCluster = new Dictionary<Vector3, MeshCluster>();
 
             var unNormalBoundsCenter = new Vector3(mesh.Bounds.Center);
+
             if (normalizeCenter)
             {
                 mesh.NormalizeToCenter();
             }
-
+            
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
