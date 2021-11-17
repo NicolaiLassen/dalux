@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Mathematics;
 
@@ -20,9 +21,24 @@ namespace Algorithm.Lib
         {
         }
 
-        
-        
-        
+
+        /// <summary>
+        /// Count point cloud
+        /// </summary>
+        /// <param name="paths"></param>
+        public static void PointCloudsSize(IEnumerable<string> paths)
+        {
+            var cnt = 0;
+            foreach (var path in paths)
+            {
+                using var sr = new StreamReader(path, Encoding.UTF8, true, 1024);
+                var size = sr.ReadLine();
+                cnt += int.Parse(size);
+            }
+
+            Console.WriteLine(cnt);
+        }
+
         /// <summary>
         ///  Consumer for point stream
         /// </summary>
@@ -35,7 +51,9 @@ namespace Algorithm.Lib
             foreach (var path in paths)
             {
                 // open stream for path
-                using var sr = new StreamReader(path);
+                using var sr = new StreamReader(path, Encoding.UTF8, true, 1024);
+                // skip first if format has count
+                await sr.ReadLineAsync();
 
                 // line stream for path
                 while (!sr.EndOfStream)

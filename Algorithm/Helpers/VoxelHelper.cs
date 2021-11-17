@@ -14,7 +14,7 @@ namespace Algorithm.Helpers
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static bool[,,] VoxelizeSTLGPU(STL mesh, int resolution = 100)
+        public static byte[,,] VoxelizeSTLGPU(STL mesh, int resolution = 100)
         {
             // ready for GPU computations with arb shader
             var computeNode = new ArbComputeShader();
@@ -22,7 +22,7 @@ namespace Algorithm.Helpers
             var vertices = mesh.Vertices;
 
             var bounds = mesh.Bounds;
-            
+
             Console.WriteLine(bounds);
 
             var maxLength =
@@ -42,7 +42,15 @@ namespace Algorithm.Helpers
 
             //
 
-            return new bool[1, 1, 1];
+            var voxelGrid = new byte[2, 2, 2];
+
+            voxelGrid[1, 0, 0] = 0;
+            voxelGrid[0, 1, 0] = 1;
+            voxelGrid[0, 0, 1] = 2;
+            
+            Console.WriteLine(voxelGrid[0,1, 0]);
+
+            return voxelGrid;
         }
 
         /// <summary>
