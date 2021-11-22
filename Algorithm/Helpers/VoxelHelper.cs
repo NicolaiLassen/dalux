@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Algorithm.Lib;
 using Algorithm.Models;
 using OpenTK.Compute.OpenCL;
@@ -10,6 +9,18 @@ namespace Algorithm.Helpers
 {
     public static class VoxelHelper
     {
+        const string kVolumeKernelKey = "Volume",
+            kSurfaceFrontKernelKey = "SurfaceFront",
+            kSurfaceBackKernelKey = "SurfaceBack",
+            kTextureKernelKey = "BuildTexture3D";
+
+        const string kStartKey = "_Start", kEndKey = "_End", kSizeKey = "_Size";
+        const string kUnitKey = "_Unit", kInvUnitKey = "_InvUnit", kHalfUnitKey = "_HalfUnit";
+        const string kWidthKey = "_Width", kHeightKey = "_Height", kDepthKey = "_Depth";
+        const string kTriCountKey = "_TrianglesCount", kTriIndexesKey = "_TriangleIndexes";
+        const string kVertBufferKey = "_VertBuffer", kUVBufferKey = "_UVBuffer", kTriBufferKey = "_TriBuffer";
+        const string kVoxelBufferKey = "_VoxelBuffer", kVoxelTextureKey = "_VoxelTexture";
+
         /// <summary>
         /// Convert triangle mesh into voxel list representation
         /// </summary>
@@ -17,14 +28,27 @@ namespace Algorithm.Helpers
         /// <returns></returns>
         public static byte[,,] VoxelizeSTLGPU(STL mesh, int resolution = 100)
         {
-            // ready for GPU computations with arb shader
+            var response = ClHelper.CreateClContextGpu();
+            if (!response.Success)
+            {
+                Console.WriteLine(response.Message);
+            }
+
+            var ctx = response.CTX;
 
             var vertices = mesh.Vertices;
-            // var computeNode = new CLBuffer(Vector3.One);
 
-            Marshal.SizeOf(typeof(Vector3));
-            
-            
+            var computeBuffer = CL.CreateBuffer(ctx, MemoryFlags.ReadWrite, vertices, out var bufferResultCode);
+
+            if (bufferResultCode != CLResultCode.Success)
+            {
+                Console.WriteLine(bufferResultCode);
+                Console.WriteLine("Vertices could not be transferred to buffer");
+
+                // TODO SEND ERROR BACK
+                Environment.Exit(0);
+            }
+
             var bounds = mesh.Bounds;
 
             var maxLength =
@@ -42,15 +66,8 @@ namespace Algorithm.Helpers
 
             // release data from GPU buffer
 
-            //
 
             var voxelGrid = new byte[2, 2, 2];
-
-            voxelGrid[1, 0, 0] = 0;
-            voxelGrid[0, 1, 0] = 1;
-            voxelGrid[0, 0, 1] = 2;
-
-            Console.WriteLine(voxelGrid[0, 1, 0]);
 
             return voxelGrid;
         }

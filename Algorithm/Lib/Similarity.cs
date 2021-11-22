@@ -44,7 +44,7 @@ namespace Algorithm.Lib
 
             stopwatch.Stop();
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
-
+            
             Environment.Exit(0);
             stopwatch.Reset();
             stopwatch.Start();

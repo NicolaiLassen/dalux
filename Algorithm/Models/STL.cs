@@ -14,7 +14,7 @@ namespace Algorithm.Lib
         private List<Facet> Facets = new List<Facet>();
         public Bounds Bounds = new Bounds();
         public List<Triangle> Triangles => Facets.Select(facet => facet.Triangle).ToList();
-        public List<Vector3> Vertices => Facets.SelectMany(facet => facet.Vertices).ToList();
+        public Vector3[] Vertices => Facets.SelectMany(facet => facet.Vertices).ToArray();
 
         public STL()
         {
