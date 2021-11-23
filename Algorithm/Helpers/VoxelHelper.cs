@@ -8,17 +8,45 @@ using OpenTK.Mathematics;
 
 namespace Algorithm.Helpers
 {
+    public struct Point3D
+    {
+        public float X;
+        public float Y;
+        public float Z;
+    }
+
     public static class VoxelHelper
     {
-        static string clSource =
+        /// <summary>
+        /// OpenCL kernel function name
+        /// </summary>
+        private const string VoxelizeFunctionName = "voxelize";
+
+        /// <summary>
+        /// OpenCl kernel source
+        /// Voxelizer
+        /// </summary>
+        private const string VoxelizerSource =
             @"
-            kernel void function(global int* src, global int* dst, int size) 
+            typedef struct _Vector3 
+            { 
+                float X; 
+                float Y; 
+                float Z; 
+            } Vector3; 
+
+            kernel void voxelize
+            (
+                global read_only Vector3* verts,
+                float unit,
+                float hunit,
+                int w,
+                int h,
+                int d
+            ) 
             {
-                int index = get_global_id(0);      
-                printf(""index: %d\n"",index);
-                int temp = dst[index];
-                dst[index] = 10;
-                printf(""size: %d\n"",dst[index]);
+                
+                printf(""Y: %d\n"", verts[10].X);
             }
         ";
 
@@ -29,7 +57,7 @@ namespace Algorithm.Helpers
         /// <returns></returns>
         public static async Task<byte[,,]> VoxelizeSTLGPU(STL mesh, int resolution = 100)
         {
-            // TODO SET GPU FROM ENV
+            // TODO SET GPU FROM ENV NOT JUST 1
             var platform = ComputePlatform.Platforms[1];
 
             // create context with all gpu devices
@@ -40,51 +68,26 @@ namespace Algorithm.Helpers
             var queue = new ComputeCommandQueue(context, context.Devices[0], ComputeCommandQueueFlags.None);
 
             // create program with opencl source
-            var program = new ComputeProgram(context, clSource);
+            var program = new ComputeProgram(context, VoxelizerSource);
 
             // compile opencl source
             program.Build(null, null, null, IntPtr.Zero);
 
             // load chosen kernel from program
-            var kernel = program.CreateKernel("function");
+            var kernel = program.CreateKernel(VoxelizeFunctionName);
 
-            // create a ten integer array and its length
-            var src = new[] {1, 2, 3, 4, 5};
-            var size = src.Length;
-            var dst = new int[size];
+            var vertBuffer = new ComputeBuffer<Vector3>(context,
+                ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, mesh.Vertices);
+            kernel.SetMemoryArgument(0, vertBuffer);
 
-            // allocate a memory buffer with the message (the int array)
-            var srcBuffer = new ComputeBuffer<int>(context,
-                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, src);
-
-            var dstBuffer = new ComputeBuffer<int>(context,
-                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, dst);
-
-            kernel.SetMemoryArgument(0, srcBuffer); // set the integer array
-            kernel.SetMemoryArgument(1, dstBuffer); // set the integer array
-            kernel.SetValueArgument(2, size); // set the array size
-
-            // execute kernel
-            queue.ExecuteTask(kernel, null);
-
-            // wait for completion
-            queue.Finish();
-
-            queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
-            
-            Console.WriteLine(dst[0]);
-
-            program.Dispose();
-            context.Dispose();
-
+            // parameters for the voxelizer alg
             var bounds = mesh.Bounds;
-
 
             var maxLength =
                 MathHelper.Max(bounds.size.X, MathHelper.Max(bounds.size.Y, bounds.size.Z));
             var unit = maxLength / resolution;
             var hunit = unit * 0.5f;
-
+            
             var s = bounds.min - new Vector3(hunit, hunit, hunit);
             var e = bounds.max + new Vector3(hunit, hunit, hunit);
             var (fx, fy, fz) = e - s;
@@ -93,9 +96,29 @@ namespace Algorithm.Helpers
             var h = (int) MathHelper.Ceiling(fy / unit);
             var d = (int) MathHelper.Ceiling(fz / unit);
 
+            // set bounds
+            kernel.SetValueArgument(1, unit);
+            kernel.SetValueArgument(2, hunit);
+
+            kernel.SetValueArgument(3, w);
+            kernel.SetValueArgument(4, h);
+            kernel.SetValueArgument(5, d);
+
+            // execute kernel
+            queue.ExecuteTask(kernel, null);
+
+            // wait for completion
+            queue.Finish();
+
             // release data from GPU buffer
+            // queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
 
             var voxelGrid = new byte[2, 2, 2];
+
+            // clean is out
+            program.Dispose();
+            context.Dispose();
+            vertBuffer.Dispose();
 
             return voxelGrid;
         }
