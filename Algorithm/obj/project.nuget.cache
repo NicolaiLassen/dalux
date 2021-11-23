@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ia+KK2n3DxSNgx/ef5MdWr2rQyEgLGKQnscyb3OMHU/sT6t3otO11lN9knBmrvwPzSEF1G76MPDwEHOx2CDPhA==",
+  "dgSpecHash": "H6IdSRCDNjRLX2fCdVp10WARKd9G4hbQiesdes9D31Wu1qnfcx2YwaDUdekR37GEAkrZzJBgljLB2hpalTU14A==",
   "success": true,
   "projectFilePath": "C:\\Users\\nicol\\OneDrive\\Dokumenter\\DTU\\02830 Advanced Project in Digital Media Engineering\\dalux\\dalux\\Dalux\\Algorithm\\Algorithm.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\nicol\\.nuget\\packages\\cloo.clsharp\\1.0.1\\cloo.clsharp.1.0.1.nupkg.sha512",
     "C:\\Users\\nicol\\.nuget\\packages\\opentk\\4.6.7\\opentk.4.6.7.nupkg.sha512",
     "C:\\Users\\nicol\\.nuget\\packages\\opentk.compute\\4.6.7\\opentk.compute.4.6.7.nupkg.sha512",
     "C:\\Users\\nicol\\.nuget\\packages\\opentk.core\\4.6.7\\opentk.core.4.6.7.nupkg.sha512",

@@ -1,75 +1,23 @@
 using System;
-using OpenTK.Compute.OpenCL;
+using System.Collections.Generic;
+using Cloo;
 
 namespace Algorithm.Helpers
 {
-    public class ClHelperContextResponse
+    public static class CLHelper
     {
-        public bool Success { get; set; }
-
-        public string Message { get; set; }
-
-        public CLContext CTX { get; set; }
-
-        public static ClHelperContextResponse FromContext(CLContext ctx)
+        public static ComputeContext GetComputeContext()
         {
-            return new ClHelperContextResponse
-            {
-                Success = true,
-                CTX = ctx
-            };
-        }
+            // setup GPU
+            var platform = ComputePlatform.Platforms[1];
 
-        public static ClHelperContextResponse FromError(string message)
-        {
-            return new ClHelperContextResponse
-            {
-                Success = false,
-                Message = message
-            };
-        }
-    }
+            var devices = new List<ComputeDevice> {platform.Devices[0]};
+            
+            var properties = new ComputeContextPropertyList(platform);
 
-    public static class ClHelper
-    {
-        public static ClHelperContextResponse CreateClContextGpu()
-        {
-            // Init openCL context for GPU Compute
+            var context = new ComputeContext(devices, properties, null, IntPtr.Zero);
 
-            var platformsResultCode = CL.GetPlatformIds(out var allPlatforms);
-
-            if (platformsResultCode != CLResultCode.Success)
-            {
-                return ClHelperContextResponse.FromError("No platforms found");
-            }
-
-            var defaultPlatform = allPlatforms[0];
-
-            var devicesResultCode = CL.GetDeviceIds(defaultPlatform, DeviceType.Gpu, out var allGpuDevices);
-
-            if (devicesResultCode != CLResultCode.Success)
-            {
-                return ClHelperContextResponse.FromError("No devices found");
-            }
-
-            var defaultGpuDevice = allGpuDevices[0];
-
-            var callback = new IntPtr();
-
-            var ctx = CL.CreateContext(
-                null,
-                1,
-                new[] {defaultGpuDevice},
-                callback,
-                IntPtr.Zero,
-                out var contextResultCode);
-
-            if (contextResultCode != CLResultCode.Success)
-            {
-                return ClHelperContextResponse.FromError("Context could not be created");
-            }
-
-            return ClHelperContextResponse.FromContext(ctx);
+            return context;
         }
     }
 }

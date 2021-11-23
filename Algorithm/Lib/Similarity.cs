@@ -43,14 +43,14 @@ namespace Algorithm.Lib
             var voxelMeshPosGrid = VoxelHelper.VoxelizeSTLGPU(mesh, resolution);
 
             stopwatch.Stop();
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            // Console.WriteLine(stopwatch.ElapsedMilliseconds);
             
             Environment.Exit(0);
             stopwatch.Reset();
             stopwatch.Start();
 
             stopwatch.Stop();
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            // Console.WriteLine(stopwatch.ElapsedMilliseconds);
 
 
             // map distance

@@ -1,55 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Algorithm.Lib;
 using Algorithm.Models;
-using OpenTK.Compute.OpenCL;
+using Cloo;
 using OpenTK.Mathematics;
 
 namespace Algorithm.Helpers
 {
     public static class VoxelHelper
     {
-        const string kVolumeKernelKey = "Volume",
-            kSurfaceFrontKernelKey = "SurfaceFront",
-            kSurfaceBackKernelKey = "SurfaceBack",
-            kTextureKernelKey = "BuildTexture3D";
-
-        const string kStartKey = "_Start", kEndKey = "_End", kSizeKey = "_Size";
-        const string kUnitKey = "_Unit", kInvUnitKey = "_InvUnit", kHalfUnitKey = "_HalfUnit";
-        const string kWidthKey = "_Width", kHeightKey = "_Height", kDepthKey = "_Depth";
-        const string kTriCountKey = "_TrianglesCount", kTriIndexesKey = "_TriangleIndexes";
-        const string kVertBufferKey = "_VertBuffer", kUVBufferKey = "_UVBuffer", kTriBufferKey = "_TriBuffer";
-        const string kVoxelBufferKey = "_VoxelBuffer", kVoxelTextureKey = "_VoxelTexture";
+        static string clSource =
+            @"
+            kernel void function(global int* src, global int* dst, int size) 
+            {
+                int index = get_global_id(0);      
+                printf(""index: %d\n"",index);
+                int temp = dst[index];
+                dst[index] = 10;
+                printf(""size: %d\n"",dst[index]);
+            }
+        ";
 
         /// <summary>
         /// Convert triangle mesh into voxel list representation
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static byte[,,] VoxelizeSTLGPU(STL mesh, int resolution = 100)
+        public static async Task<byte[,,]> VoxelizeSTLGPU(STL mesh, int resolution = 100)
         {
-            var response = ClHelper.CreateClContextGpu();
-            if (!response.Success)
-            {
-                Console.WriteLine(response.Message);
-            }
+            // TODO SET GPU FROM ENV
+            var platform = ComputePlatform.Platforms[1];
 
-            var ctx = response.CTX;
+            // create context with all gpu devices
+            var context = new ComputeContext(ComputeDeviceTypes.Gpu,
+                new ComputeContextPropertyList(platform), null, IntPtr.Zero);
 
-            var vertices = mesh.Vertices;
+            // create a command queue with gpu
+            var queue = new ComputeCommandQueue(context, context.Devices[0], ComputeCommandQueueFlags.None);
 
-            var computeBuffer = CL.CreateBuffer(ctx, MemoryFlags.ReadWrite, vertices, out var bufferResultCode);
+            // create program with opencl source
+            var program = new ComputeProgram(context, clSource);
 
-            if (bufferResultCode != CLResultCode.Success)
-            {
-                Console.WriteLine(bufferResultCode);
-                Console.WriteLine("Vertices could not be transferred to buffer");
+            // compile opencl source
+            program.Build(null, null, null, IntPtr.Zero);
 
-                // TODO SEND ERROR BACK
-                Environment.Exit(0);
-            }
+            // load chosen kernel from program
+            var kernel = program.CreateKernel("function");
+
+            // create a ten integer array and its length
+            var src = new[] {1, 2, 3, 4, 5};
+            var size = src.Length;
+            var dst = new int[size];
+
+            // allocate a memory buffer with the message (the int array)
+            var srcBuffer = new ComputeBuffer<int>(context,
+                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, src);
+
+            var dstBuffer = new ComputeBuffer<int>(context,
+                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, dst);
+
+            kernel.SetMemoryArgument(0, srcBuffer); // set the integer array
+            kernel.SetMemoryArgument(1, dstBuffer); // set the integer array
+            kernel.SetValueArgument(2, size); // set the array size
+
+            // execute kernel
+            queue.ExecuteTask(kernel, null);
+
+            // wait for completion
+            queue.Finish();
+
+            queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
+            
+            Console.WriteLine(dst[0]);
+
+            program.Dispose();
+            context.Dispose();
 
             var bounds = mesh.Bounds;
+
 
             var maxLength =
                 MathHelper.Max(bounds.size.X, MathHelper.Max(bounds.size.Y, bounds.size.Z));
@@ -66,7 +95,6 @@ namespace Algorithm.Helpers
 
             // release data from GPU buffer
 
-
             var voxelGrid = new byte[2, 2, 2];
 
             return voxelGrid;
@@ -80,6 +108,8 @@ namespace Algorithm.Helpers
         /// <returns></returns>
         public static List<Facet> CreateSTLVoxel(Vector3 pos, float size, ushort attribute = ushort.MinValue)
         {
+            // CPU
+
             // -1 and 1 center of point 
             // half the size to correct for two sided scaling [-1...1]
             var cubeSize = size / 2;

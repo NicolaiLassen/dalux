@@ -54,3 +54,4 @@ C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media E
 C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.dll
 C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.pdb
 C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.genruntimeconfig.cache
+C:\Users\nicol\OneDrive\Dokumenter\DTU\02830 Advanced Project in Digital Media Engineering\dalux\dalux\Dalux\Algorithm\bin\Debug\netcoreapp3.1\Cloo.dll
