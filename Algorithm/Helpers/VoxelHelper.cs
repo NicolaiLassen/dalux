@@ -87,11 +87,12 @@ namespace Algorithm.Helpers
                 MathHelper.Max(bounds.size.X, MathHelper.Max(bounds.size.Y, bounds.size.Z));
             var unit = maxLength / resolution;
             var hunit = unit * 0.5f;
-            
+
             var s = bounds.min - new Vector3(hunit, hunit, hunit);
             var e = bounds.max + new Vector3(hunit, hunit, hunit);
             var (fx, fy, fz) = e - s;
 
+            // grid max size for allocation
             var w = (int) MathHelper.Ceiling(fx / unit);
             var h = (int) MathHelper.Ceiling(fy / unit);
             var d = (int) MathHelper.Ceiling(fz / unit);
@@ -104,6 +105,8 @@ namespace Algorithm.Helpers
             kernel.SetValueArgument(4, h);
             kernel.SetValueArgument(5, d);
 
+            // set out buffer for matrix
+
             // execute kernel
             queue.ExecuteTask(kernel, null);
 
@@ -115,10 +118,14 @@ namespace Algorithm.Helpers
 
             var voxelGrid = new byte[2, 2, 2];
 
-            // clean is out
+            // clean the context
+            vertBuffer.Dispose();
+            kernel.Dispose();
+            program.Dispose();
+
+            // do static helper to keep the 
             program.Dispose();
             context.Dispose();
-            vertBuffer.Dispose();
 
             return voxelGrid;
         }
