@@ -60,7 +60,6 @@ namespace Algorithm.Helpers
             }
         ";
 
-
         /// <summary>
         /// Expand flatten buffer 2 3d
         /// </summary>
@@ -72,9 +71,11 @@ namespace Algorithm.Helpers
         /// <returns></returns>
         private static T[,,] Expand3d<T>(T[] value, int w, int h, int d)
         {
+            // create 3d grid [,,]
             var result = new T[w, h, d];
             for (var i = 0; i < value.Length; ++i)
             {
+                // unpack
                 var x = i / (d * h);
                 var y = i / d % h;
                 var z = i % d;
@@ -85,7 +86,7 @@ namespace Algorithm.Helpers
         }
 
         /// <summary>
-        /// Convert triangle mesh into voxel list representation
+        /// Convert triangle mesh into voxel grid representation
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -134,10 +135,11 @@ namespace Algorithm.Helpers
             var h = (int) MathHelper.Ceiling(fy / unit);
             var d = (int) MathHelper.Ceiling(fz / unit);
 
-            // set bounds
+            // set units
             kernel.SetValueArgument(1, unit);
             kernel.SetValueArgument(2, hunit);
 
+            // set bounds
             kernel.SetValueArgument(3, w);
             kernel.SetValueArgument(4, h);
             kernel.SetValueArgument(5, d);
@@ -146,10 +148,11 @@ namespace Algorithm.Helpers
             // 0: out of mesh
             // 1: on mesh
             // 2: inside mesh
-            
-            var flattenedSize = w * h * d;
-            var dst = new byte[flattenedSize];
 
+            // flatten buffer representation 
+            var flatten = w * h * d;
+            var dst = new byte[flatten];
+            
             var dstBuffer = new ComputeBuffer<byte>(context,
                 ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, dst);
             kernel.SetMemoryArgument(6, dstBuffer);
