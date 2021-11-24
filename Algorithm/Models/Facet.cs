@@ -1,31 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Algorithm.Helpers;
 using OpenTK.Mathematics;
 
 namespace Algorithm.Models
 {
-    public class Facet : IEnumerable<Vector3>
+    public class Facet
     {
         public Vector3 Normal { get; set; }
 
-        public List<Vector3> Vertices { get; set; }
+        public Vector3[] Vertices { get; set; }
 
         public Triangle Triangle { get; set; }
 
         public ushort AttributeByteCount { get; set; }
-
-        public IEnumerator<Vector3> GetEnumerator()
-        {
-            return Vertices.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
 
         public void Write(BinaryWriter writer)
         {
@@ -33,7 +20,10 @@ namespace Algorithm.Models
             Vector3Helpers.ToBinary(writer, Normal);
 
             // write each vertex
-            Vertices.ForEach(vector3 => Vector3Helpers.ToBinary(writer, vector3));
+            foreach (var vertex in Vertices)
+            {
+                Vector3Helpers.ToBinary(writer, vertex);
+            }
 
             // write the attribute byte count
             writer.Write(AttributeByteCount);
@@ -43,9 +33,13 @@ namespace Algorithm.Models
         {
             // create the facet
             var normal = Vector3Helpers.FromBinary(reader);
-            var vertices = Enumerable.Range(0, 3)
-                .Select(_ => Vector3Helpers.FromBinary(reader)).ToList();
-            
+            var vertices = new Vector3[3];
+
+            for (var i = 0; i < 3; i++)
+            {
+                vertices[i] = Vector3Helpers.FromBinary(reader);
+            }
+
             return new Facet
             {
                 Normal = normal,

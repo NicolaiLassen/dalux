@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Algorithm.Models;
 using OpenTK.Mathematics;
@@ -13,8 +12,8 @@ namespace Algorithm.Lib
     {
         private List<Facet> Facets = new List<Facet>();
         public Bounds Bounds = new Bounds();
-        public List<Triangle> Triangles => Facets.Select(facet => facet.Triangle).ToList();
-        public Vector3[] Vertices => Facets.SelectMany(facet => facet.Vertices).ToArray();
+        public Triangle[] Triangles => GetTriangles();
+        public Vector3[] Vertices => GetVertices();
 
         public STL()
         {
@@ -23,6 +22,31 @@ namespace Algorithm.Lib
         public STL(List<Facet> facets)
         {
             Facets = facets;
+        }
+
+        private Triangle[] GetTriangles()
+        {
+            var triangles = new Triangle[Facets.Count];
+            for (var i = 0; i < Facets.Count; i++)
+            {
+                triangles[i] = Facets[i].Triangle;
+            }
+
+            return triangles;
+        }
+
+        private Vector3[] GetVertices()
+        {
+            var vertices = new Vector3[Facets.Count * 3];
+            for (var i = 0; i < Facets.Count; i++)
+            {
+                for (var j = 0; j < 3; j++)
+                {
+                    vertices[i] = Facets[i].Vertices[j];
+                }
+            }
+
+            return vertices;
         }
 
         public IEnumerator<Facet> GetEnumerator()
@@ -42,19 +66,19 @@ namespace Algorithm.Lib
         {
             // CPU Bound
             //////// TODO
-            
+
             // Create new facets list
             var facets = new List<Facet>();
 
-            // subtract center from all vertexes so to start in 000
+            // subtract center from all vertexes so to norm around 000
             foreach (var facet in Facets)
             {
-                var normVerts = new List<Vector3>();
-                foreach (var facetVertex in facet.Vertices)
+                var normVerts = new[]
                 {
-                    var vector3 = Vector3.Subtract(facetVertex, Bounds.Center);
-                    normVerts.Add(vector3);
-                }
+                    Vector3.Subtract(facet.Vertices[0], Bounds.Center),
+                    Vector3.Subtract(facet.Vertices[1], Bounds.Center),
+                    Vector3.Subtract(facet.Vertices[2], Bounds.Center),
+                };
 
                 facet.Vertices = normVerts;
                 facets.Add(facet);
@@ -77,7 +101,7 @@ namespace Algorithm.Lib
             // update bounds for stl model
             foreach (var facet in Facets)
             {
-                foreach (var vertex in facet)
+                foreach (var vertex in facet.Vertices)
                 {
                     min = Vector3.ComponentMin(min, vertex);
                     max = Vector3.ComponentMax(max, vertex);
@@ -144,7 +168,10 @@ namespace Algorithm.Lib
             writer.Write((uint) Facets.Count);
 
             // write each facet.
-            Facets.ForEach(o => o.Write(writer));
+            foreach (var facet in Facets)
+            {
+                facet.Write(writer);
+            }
         }
     }
 }

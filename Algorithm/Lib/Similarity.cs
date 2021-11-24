@@ -20,46 +20,22 @@ namespace Algorithm.Lib
         public static async Task MeshPointCloudIntersectionAsync(
             STL mesh,
             IAsyncEnumerable<Vector3> pts,
-            int resolution = 100,
-            bool normalizeCenter = false)
+            int resolution = 100
+        )
         {
-            // voxel denote point on grid with p value of depth, width, height
-            // using snaps for each point to detect cluster
+            var (voxelGrid, unit, (w, h, d))
+                = await Voxelizer.STLGPU(mesh, resolution);
 
-            // voxel grid holds pointers to all contained point clusters  
-            var voxelMeshCluster = new Dictionary<Vector3, MeshCluster>();
-
-            var unNormalBoundsCenter = new Vector3(mesh.Bounds.Center);
-
-            if (normalizeCenter)
-            {
-                mesh.NormalizeToCenter();
-            }
+            // init arguments for copy of errors
+            var hunit = unit * 0.5f;
+            var voxelPointGrid = new byte[w, h, d];
 
             var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            var (voxelGrid, unit) = await VoxelHelper.VoxelizeSTLGPU(mesh, resolution);
-
-            stopwatch.Stop();
-            // Console.WriteLine(stopwatch.ElapsedMilliseconds);
-
-            stopwatch.Reset();
-            stopwatch.Start();
-
-            var hunit = unit * 0.5f;
-
-            var w = voxelGrid.GetLength(0);
-            var h = voxelGrid.GetLength(1);
-            var d = voxelGrid.GetLength(2);
-            var voxelPointGrid = new byte[w, h, d];
 
             // CPU 
             /////// TODO MOVE TO GPU - threading
             await foreach (var vector3 in pts)
             {
-                // Could convert unit float distance to 
-
                 var (x, y, z) = vector3 - new Vector3(hunit, hunit, hunit);
                 var xGridSteps = (int) Math.Round(x / unit);
                 var yGridSteps = (int) Math.Round(y / unit);
@@ -67,16 +43,34 @@ namespace Algorithm.Lib
 
                 // copy errors
                 voxelPointGrid[xGridSteps, yGridSteps, zGridSteps]
-                    = voxelGrid[xGridSteps, yGridSteps, zGridSteps];
+                    = voxelGrid[zGridSteps + d * (yGridSteps + h * xGridSteps)];
             }
-            
-            Console.WriteLine(voxelPointGrid[0,0,0]);
+
+            // HELPER TEMP
+            // TEEEEMP
+
+            var stlFacets = new List<Facet>();
+            for (var x = 0; x < voxelPointGrid.GetLength(0); x++)
+            {
+                for (var y = 0; y < voxelPointGrid.GetLength(1); y++)
+                {
+                    for (var z = 0; z < voxelPointGrid.GetLength(2); z++)
+                    {
+                        if (voxelPointGrid[x, y, z] == 0) continue;
+                        var v = new Vector3(x * unit, y * unit, z * unit);
+                        var boxFacets = STLShapes.Voxel(v, hunit);
+                        stlFacets.AddRange(boxFacets);
+                    }
+                }
+            }
+
+            new STL(stlFacets).SaveAsBinary("voxels.stl");
 
             // TODO
             // TODO FILL BUFFER IN A Q 
             // Create a command Q and execute for each buffer on the same aomic pointer
 
-            stopwatch.Stop();
+            // stopwatch.Stop();
             // Console.WriteLine(stopwatch.ElapsedMilliseconds);
         }
     }
