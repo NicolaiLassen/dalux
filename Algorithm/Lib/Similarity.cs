@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using Algorithm.Helpers;
 using Algorithm.Models;
@@ -36,69 +35,47 @@ namespace Algorithm.Lib
             {
                 mesh.NormalizeToCenter();
             }
-            
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var voxelMeshPosGrid = VoxelHelper.VoxelizeSTLGPU(mesh, resolution);
+            var (voxelGrid, unit) = await VoxelHelper.VoxelizeSTLGPU(mesh, resolution);
 
             stopwatch.Stop();
             // Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            
-            Environment.Exit(0);
+
             stopwatch.Reset();
             stopwatch.Start();
 
-            stopwatch.Stop();
-            // Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            var hunit = unit * 0.5f;
 
+            var w = voxelGrid.GetLength(0);
+            var h = voxelGrid.GetLength(1);
+            var d = voxelGrid.GetLength(2);
+            var voxelPointGrid = new byte[w, h, d];
 
-            // map distance
-            // var distanceMap = new List<Vector3>();
-
-            // divide points for threadpool
-            // pool
-
-            // TODO
-            // create thread pool
-
-            // var detectionState = new DetectionState
-            // {
-            //     Stream = pts,
-            //     VoxelMeshPosGrid = voxelMeshPosGrid,
-            //     VoxelMeshCluster = voxelMeshCluster,
-            // };
-            //
-            // if (normalizeCenter)
-            // {
-            //     detectionState.NormalizeBoundCenter = unNormalBoundsCenter;
-            // }
-
-            // DetectionAsync(detectionState);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="stateInfo"></param>
-        private static async void DetectionAsync(object stateInfo)
-        {
-            var detectionState = (DetectionState) stateInfo;
-
-            var meshPointIrregularity = new List<Vector3>();
-
-            // P
-            await foreach (var pos in detectionState.Stream)
+            // CPU 
+            /////// TODO MOVE TO GPU - threading
+            await foreach (var vector3 in pts)
             {
-                var distance = Vector3.Distance(pos, pos);
-                Console.WriteLine(distance);
-                // Compute on GPU
+                // Could convert unit float distance to 
+
+                var (x, y, z) = vector3 - new Vector3(hunit, hunit, hunit);
+                var xGridSteps = (int) Math.Round(x / unit);
+                var yGridSteps = (int) Math.Round(y / unit);
+                var zGridSteps = (int) Math.Round(z / unit);
+
+                // copy errors
+                voxelPointGrid[xGridSteps, yGridSteps, zGridSteps]
+                    = voxelGrid[xGridSteps, yGridSteps, zGridSteps];
             }
 
-            // add found points to clusters
-            Monitor.Enter(detectionState.VoxelMeshCluster);
-            // DO WORK
-            Monitor.Exit(detectionState.VoxelMeshCluster);
+            // TODO
+            // TODO FILL BUFFER IN A Q 
+            // Create a command Q and execute for each buffer on the same aomic pointer
+
+            stopwatch.Stop();
+            // Console.WriteLine(stopwatch.ElapsedMilliseconds);
         }
     }
 }

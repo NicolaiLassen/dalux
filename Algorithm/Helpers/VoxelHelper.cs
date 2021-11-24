@@ -35,6 +35,8 @@ namespace Algorithm.Helpers
                 float Z; 
             } Vector3; 
 
+            
+
             kernel void voxelize
             (
                 global read_only Vector3* verts,
@@ -50,9 +52,8 @@ namespace Algorithm.Helpers
                 for (int z = 0; z < d; z++) {
                     for (int y = 0; y < h; y++) {
                         for (int x = 0; x < w; x++) {
-                      
+                            
                             dst[z + d * (y + h * x)] = 0;
-
                         }
                     }                    
                 }
@@ -90,7 +91,7 @@ namespace Algorithm.Helpers
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static async Task<byte[,,]> VoxelizeSTLGPU(STL mesh, int resolution = 100)
+        public static async Task<(byte[,,], float)> VoxelizeSTLGPU(STL mesh, int resolution = 100)
         {
             // TODO SET GPU FROM ENV NOT JUST 1
             var platform = ComputePlatform.Platforms[1];
@@ -135,6 +136,10 @@ namespace Algorithm.Helpers
             var h = (int) MathHelper.Ceiling(fy / unit);
             var d = (int) MathHelper.Ceiling(fz / unit);
 
+            Console.WriteLine(w);
+            Console.WriteLine(h);
+            Console.WriteLine(d);
+
             // set units
             kernel.SetValueArgument(1, unit);
             kernel.SetValueArgument(2, hunit);
@@ -152,8 +157,8 @@ namespace Algorithm.Helpers
             // flatten buffer representation 
             var flatten = w * h * d;
             var dst = new byte[flatten];
-            
-            var dstBuffer = new ComputeBuffer<byte>(context,
+
+            using var dstBuffer = new ComputeBuffer<byte>(context,
                 ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, dst);
             kernel.SetMemoryArgument(6, dstBuffer);
 
@@ -167,7 +172,7 @@ namespace Algorithm.Helpers
             queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
 
             // expand back to byte[,,]
-            return Expand3d(dst, w, h, d);
+            return (Expand3d(dst, w, h, d), unit);
         }
 
         /// <summary>
@@ -178,7 +183,8 @@ namespace Algorithm.Helpers
         /// <returns></returns>
         public static List<Facet> CreateSTLVoxel(Vector3 pos, float size, ushort attribute = ushort.MinValue)
         {
-            // CPU
+            // CPU bound
+            /////// TODO
 
             // -1 and 1 center of point 
             // half the size to correct for two sided scaling [-1...1]

@@ -40,6 +40,9 @@ namespace Algorithm.Lib
         /// </summary>
         public void NormalizeToCenter()
         {
+            // CPU Bound
+            //////// TODO
+            
             // Create new facets list
             var facets = new List<Facet>();
 
