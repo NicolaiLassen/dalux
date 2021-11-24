@@ -42,20 +42,54 @@ namespace Algorithm.Helpers
                 float hunit,
                 int w,
                 int h,
-                int d
+                int d,
+                global char* dst
             ) 
             {
-                
-                printf(""Y: %.6f"", verts[10].X);
+
+                for (int z = 0; z < d; z++) {
+                    for (int y = 0; y < h; y++) {
+                        for (int x = 0; x < w; x++) {
+                      
+                            dst[z + d * (y + h * x)] = 0;
+
+                        }
+                    }                    
+                }
+
             }
         ";
+
+
+        /// <summary>
+        /// Expand flatten buffer 2 3d
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        /// <param name="d"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        private static T[,,] Expand3d<T>(T[] value, int w, int h, int d)
+        {
+            var result = new T[w, h, d];
+            for (var i = 0; i < value.Length; ++i)
+            {
+                var x = i / (d * h);
+                var y = i / d % h;
+                var z = i % d;
+                result[x, y, z] = value[i];
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Convert triangle mesh into voxel list representation
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static async Task<VoxelGrid> VoxelizeSTLGPU(STL mesh, int resolution = 100)
+        public static async Task<byte[,,]> VoxelizeSTLGPU(STL mesh, int resolution = 100)
         {
             // TODO SET GPU FROM ENV NOT JUST 1
             var platform = ComputePlatform.Platforms[1];
@@ -95,7 +129,7 @@ namespace Algorithm.Helpers
             var e = bounds.max + new Vector3(hunit, hunit, hunit);
             var (fx, fy, fz) = e - s;
 
-            // grid max size for allocation
+            // ceiling of grid max size for allocation
             var w = (int) MathHelper.Ceiling(fx / unit);
             var h = (int) MathHelper.Ceiling(fy / unit);
             var d = (int) MathHelper.Ceiling(fz / unit);
@@ -109,16 +143,16 @@ namespace Algorithm.Helpers
             kernel.SetValueArgument(5, d);
 
             // set out buffer for byte matrix
+            // 0: out of mesh
+            // 1: on mesh
+            // 2: inside mesh
+            
+            var flattenedSize = w * h * d;
+            var dst = new byte[flattenedSize];
 
-            // byte syntex
-            // 00: out of mesh
-            // 01: on mesh
-            // 10: inside mesh
-            var dstMatrix = new[] {VoxelGrid.CreateFromBounds(w, h, d)};
-
-            using var dstBuffer = new ComputeBuffer<VoxelGrid>(context,
-                ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, dstMatrix);
-            kernel.SetMemoryArgument(0, vertBuffer);
+            var dstBuffer = new ComputeBuffer<byte>(context,
+                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, dst);
+            kernel.SetMemoryArgument(6, dstBuffer);
 
             // execute kernel
             queue.ExecuteTask(kernel, null);
@@ -127,9 +161,10 @@ namespace Algorithm.Helpers
             queue.Finish();
 
             // release data from GPU buffer
-            queue.ReadFromBuffer(dstBuffer, ref dstMatrix, true, null);
+            queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
 
-            return dstMatrix[0];
+            // expand back to byte[,,]
+            return Expand3d(dst, w, h, d);
         }
 
         /// <summary>
