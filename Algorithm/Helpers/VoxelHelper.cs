@@ -46,7 +46,7 @@ namespace Algorithm.Helpers
             ) 
             {
                 
-                printf(""Y: %d\n"", verts[10].X);
+                printf(""Y: %.6f"", verts[10].X);
             }
         ";
 
@@ -55,28 +55,31 @@ namespace Algorithm.Helpers
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static async Task<byte[,,]> VoxelizeSTLGPU(STL mesh, int resolution = 100)
+        public static async Task<VoxelGrid> VoxelizeSTLGPU(STL mesh, int resolution = 100)
         {
             // TODO SET GPU FROM ENV NOT JUST 1
             var platform = ComputePlatform.Platforms[1];
 
+            // scoped
+
             // create context with all gpu devices
-            var context = new ComputeContext(ComputeDeviceTypes.Gpu,
+            using var context = new ComputeContext(ComputeDeviceTypes.Gpu,
                 new ComputeContextPropertyList(platform), null, IntPtr.Zero);
 
             // create a command queue with gpu
-            var queue = new ComputeCommandQueue(context, context.Devices[0], ComputeCommandQueueFlags.None);
+            using var queue = new ComputeCommandQueue(context, context.Devices[0], ComputeCommandQueueFlags.None);
 
             // create program with opencl source
-            var program = new ComputeProgram(context, VoxelizerSource);
+            using var program = new ComputeProgram(context, VoxelizerSource);
 
             // compile opencl source
             program.Build(null, null, null, IntPtr.Zero);
 
             // load chosen kernel from program
-            var kernel = program.CreateKernel(VoxelizeFunctionName);
+            using var kernel = program.CreateKernel(VoxelizeFunctionName);
 
-            var vertBuffer = new ComputeBuffer<Vector3>(context,
+            // mesh vertices in
+            using var vertBuffer = new ComputeBuffer<Vector3>(context,
                 ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, mesh.Vertices);
             kernel.SetMemoryArgument(0, vertBuffer);
 
@@ -105,7 +108,17 @@ namespace Algorithm.Helpers
             kernel.SetValueArgument(4, h);
             kernel.SetValueArgument(5, d);
 
-            // set out buffer for matrix
+            // set out buffer for byte matrix
+
+            // byte syntex
+            // 00: out of mesh
+            // 01: on mesh
+            // 10: inside mesh
+            var dstMatrix = new[] {VoxelGrid.CreateFromBounds(w, h, d)};
+
+            using var dstBuffer = new ComputeBuffer<VoxelGrid>(context,
+                ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, dstMatrix);
+            kernel.SetMemoryArgument(0, vertBuffer);
 
             // execute kernel
             queue.ExecuteTask(kernel, null);
@@ -114,20 +127,9 @@ namespace Algorithm.Helpers
             queue.Finish();
 
             // release data from GPU buffer
-            // queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
+            queue.ReadFromBuffer(dstBuffer, ref dstMatrix, true, null);
 
-            var voxelGrid = new byte[2, 2, 2];
-
-            // clean the context
-            vertBuffer.Dispose();
-            kernel.Dispose();
-            program.Dispose();
-
-            // do static helper to keep the 
-            program.Dispose();
-            context.Dispose();
-
-            return voxelGrid;
+            return dstMatrix[0];
         }
 
         /// <summary>
