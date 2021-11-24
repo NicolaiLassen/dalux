@@ -53,7 +53,7 @@ namespace Algorithm.Helpers
                     for (int y = 0; y < h; y++) {
                         for (int x = 0; x < w; x++) {
                             
-                            dst[z + d * (y + h * x)] = 0;
+                            dst[z + d * (y + h * x)] = 1;
                         }
                     }                    
                 }
@@ -150,8 +150,10 @@ namespace Algorithm.Helpers
             kernel.SetValueArgument(5, d);
 
             // set out buffer for byte matrix
-            // 0: out of mesh
-            // 1: on mesh
+            // correct
+            // 0: on mesh
+            // errors
+            // 1: out of mesh
             // 2: inside mesh
 
             // flatten buffer representation 

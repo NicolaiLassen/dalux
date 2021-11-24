@@ -69,6 +69,8 @@ namespace Algorithm.Lib
                 voxelPointGrid[xGridSteps, yGridSteps, zGridSteps]
                     = voxelGrid[xGridSteps, yGridSteps, zGridSteps];
             }
+            
+            Console.WriteLine(voxelPointGrid[0,0,0]);
 
             // TODO
             // TODO FILL BUFFER IN A Q 
