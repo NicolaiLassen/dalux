@@ -8,7 +8,7 @@ using OpenTK.Mathematics;
 
 namespace Algorithm.Lib
 {
-    public static class Similarity
+    public static class Intersect
     {
         /// <summary>
         /// Find a distance map from point in space to mesh
@@ -32,6 +32,7 @@ namespace Algorithm.Lib
 
             var stopwatch = new Stopwatch();
 
+            stopwatch.Start();
             // CPU 
             /////// TODO MOVE TO GPU - threading
             await foreach (var vector3 in pts)
@@ -41,11 +42,15 @@ namespace Algorithm.Lib
                 var yGridSteps = (int) Math.Round(y / unit);
                 var zGridSteps = (int) Math.Round(z / unit);
 
-                // copy errors
+                // copy errors from voxel rep to cloud rep 
                 voxelPointGrid[xGridSteps, yGridSteps, zGridSteps]
                     = voxelGrid[zGridSteps + d * (yGridSteps + h * xGridSteps)];
             }
 
+            Console.WriteLine(
+                $"(Intersection) grid size: {w}x{h}x{d}, time: {stopwatch.ElapsedMilliseconds}ms");
+            stopwatch.Stop();
+            
             // HELPER TEMP
             // TEEEEMP
 
@@ -65,13 +70,6 @@ namespace Algorithm.Lib
             }
 
             new STL(stlFacets).SaveAsBinary("voxels.stl");
-
-            // TODO
-            // TODO FILL BUFFER IN A Q 
-            // Create a command Q and execute for each buffer on the same aomic pointer
-
-            // stopwatch.Stop();
-            // Console.WriteLine(stopwatch.ElapsedMilliseconds);
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Algorithm.Helpers;
 using Algorithm.Lib;
-using Algorithm.Models;
+using Algorithm.Services;
 
 namespace Algorithm
 {
@@ -13,9 +12,8 @@ namespace Algorithm
 
         static async Task Main(string[] args)
         {
-
             // set compute
-            OpenCLCompute.SetContext();
+            ComputeService.SetComputePlatformIndex(1);
 
             // point stream async itr
             //  var ptsPaths = Directory.GetFiles(Path.Combine(TEMP_PATH, "pts")) // for speed test
@@ -26,18 +24,12 @@ namespace Algorithm
             // var meshPath = Path.Combine(TEMP_PATH, "alignedIFCfile.stl"); // for speed test
             var meshPath = Path.Combine(TEMP_PATH, "part1_solid_correct.STL");
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
-            
+
             // stl.NormalizeToCenter();
             stl.SaveAsBinary("normal_mesh.stl");
 
             // generate distance Map
-            await Similarity.MeshPointCloudIntersectionAsync(stl, ptsStream, 100);
-
-            // feed distance map to shader
-            var shader = Shader.ShaderFromDistanceMap();
-
-            // write shader to file
-            shader.Write();
+            await Intersect.MeshPointCloudIntersectionAsync(stl, ptsStream, 100);
         }
     }
 }

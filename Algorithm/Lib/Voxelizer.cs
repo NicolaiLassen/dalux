@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Algorithm.Helpers;
+using Algorithm.Services;
 using Cloo;
 using OpenTK.Mathematics;
 
@@ -58,8 +58,10 @@ namespace Algorithm.Lib
         /// <returns></returns>
         public static async Task<(byte[], float, (int, int, int))> STLGPU(STL mesh, int resolution = 100)
         {
+            using var compute = ComputeService.UseComputeService();
+
             // create program with opencl source
-            using var program = new ComputeProgram(OpenCLCompute.Context, VoxelizerSource);
+            using var program = new ComputeProgram(compute.Context, VoxelizerSource);
 
             // compile opencl source
             program.Build(null, null, null, IntPtr.Zero);
@@ -68,7 +70,7 @@ namespace Algorithm.Lib
             using var kernel = program.CreateKernel(VoxelizeFunctionName);
 
             // mesh vertices in
-            using var vertBuffer = new ComputeBuffer<Vector3>(OpenCLCompute.Context,
+            using var vertBuffer = new ComputeBuffer<Vector3>(compute.Context,
                 ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, mesh.Vertices);
             kernel.SetMemoryArgument(0, vertBuffer);
 
@@ -109,7 +111,7 @@ namespace Algorithm.Lib
             var flatten = w * h * d;
             var dst = new byte[flatten];
 
-            using var dstBuffer = new ComputeBuffer<byte>(OpenCLCompute.Context,
+            using var dstBuffer = new ComputeBuffer<byte>(compute.Context,
                 ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, dst);
             kernel.SetMemoryArgument(6, dstBuffer);
 
@@ -117,19 +119,19 @@ namespace Algorithm.Lib
             var stopwatch = new Stopwatch();
 
             // execute kernel
-            OpenCLCompute.Queue.ExecuteTask(kernel, null);
+            compute.Queue.ExecuteTask(kernel, null);
 
             // test alg time voxels
             stopwatch.Start();
 
             // wait for completion
-            OpenCLCompute.Queue.Finish();
+            compute.Queue.Finish();
 
-            stopwatch.Stop();
             Console.WriteLine($"(Voxelizer) grid size: {w}x{h}x{d}, time: {stopwatch.ElapsedMilliseconds}ms");
+            stopwatch.Stop();
 
             // release data from GPU buffer
-            OpenCLCompute.Queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
+            compute.Queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
 
             // expand back buffer to 3d e.g. byte[,,]
             return (dst, unit, (w, h, d));

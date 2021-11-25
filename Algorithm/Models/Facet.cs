@@ -31,15 +31,17 @@ namespace Algorithm.Models
 
         public static Facet Read(BinaryReader reader)
         {
-            // create the facet
+            // read normal
             var normal = Vector3Helpers.FromBinary(reader);
-            var vertices = new Vector3[3];
 
+            // read very vertex
+            var vertices = new Vector3[3];
             for (var i = 0; i < 3; i++)
             {
                 vertices[i] = Vector3Helpers.FromBinary(reader);
             }
 
+            // create facet
             return new Facet
             {
                 Normal = normal,

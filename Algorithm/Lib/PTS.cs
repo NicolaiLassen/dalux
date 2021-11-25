@@ -21,7 +21,6 @@ namespace Algorithm.Lib
         {
         }
 
-
         /// <summary>
         /// Count point cloud
         /// </summary>
