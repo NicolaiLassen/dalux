@@ -46,7 +46,7 @@ namespace Algorithm.Models
             {
                 Normal = normal,
                 Vertices = vertices,
-                Triangle = new Triangle(vertices[0], vertices[1], vertices[2]),
+                Triangle = new Triangle(vertices[0], vertices[1], vertices[2], normal),
                 AttributeByteCount = reader.ReadUInt16()
             };
         }

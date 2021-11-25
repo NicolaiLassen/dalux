@@ -12,7 +12,7 @@ namespace Algorithm.Helpers
         /// <param name="pos"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public static IEnumerable<Facet> Voxel(Vector3 pos, float size, ushort attribute = ushort.MinValue)
+        public static IEnumerable<Facet> Cube(Vector3 pos, float size, ushort attribute = ushort.MinValue)
         {
             // -1 and 1 center of point 
             // half the size to correct for two sided scaling [-1...1]

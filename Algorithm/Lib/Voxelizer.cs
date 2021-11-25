@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Algorithm.Models;
 using Algorithm.Services;
 using Cloo;
 using OpenTK.Mathematics;
@@ -27,9 +28,17 @@ namespace Algorithm.Lib
                 float Z; 
             } Vector3; 
 
+            typedef struct _Triangle 
+            { 
+                Vector3 A; 
+                Vector3 B; 
+                Vector3 C; 
+                Vector3 Normal;
+            } Triangle; 
+
             kernel void voxelize
             (
-                global read_only Vector3* verts,
+                global read_only Triangle* triangles,
                 float unit,
                 float hunit,
                 int w,
@@ -38,16 +47,14 @@ namespace Algorithm.Lib
                 global char* dst
             ) 
             {
-
                 for (int z = 0; z < d; z++) {
                     for (int y = 0; y < h; y++) {
                         for (int x = 0; x < w; x++) {
                             
-                            dst[z + d * (y + h * x)] = 1;
+                            dst[z + d * (y + h * x)] = 5;
                         }
                     }                    
                 }
-
             }
         ";
 
@@ -70,9 +77,9 @@ namespace Algorithm.Lib
             using var kernel = program.CreateKernel(VoxelizeFunctionName);
 
             // mesh vertices in
-            using var vertBuffer = new ComputeBuffer<Vector3>(compute.Context,
-                ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, mesh.Vertices);
-            kernel.SetMemoryArgument(0, vertBuffer);
+            using var triangleBuffer = new ComputeBuffer<Triangle>(compute.Context,
+                ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, mesh.Triangles);
+            kernel.SetMemoryArgument(0, triangleBuffer);
 
             // parameters for the voxelizer alg
             var bounds = mesh.Bounds;

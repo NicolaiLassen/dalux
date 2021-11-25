@@ -26,9 +26,9 @@ namespace Algorithm
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
 
             // stl.NormalizeToCenter();
-            stl.SaveAsBinary("normal_mesh.stl");
+            stl.SaveAsBinary("mesh.stl");
 
-            // generate distance Map
+            // generate error map
             await Intersect.MeshPointCloudIntersectionAsync(stl, ptsStream, 100);
         }
     }

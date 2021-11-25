@@ -19,8 +19,8 @@ namespace Algorithm.Models
 
         public Vector3 size
         {
-            get { return Extents * 2.0F; }
-            set { Extents = value * 0.5F; }
+            get => Extents * 2.0F;
+            set => Extents = value * 0.5F;
         }
 
         public void SetMinMax(Vector3 min, Vector3 max)
@@ -31,14 +31,14 @@ namespace Algorithm.Models
 
         public Vector3 min
         {
-            get { return Center - Extents; }
-            set { SetMinMax(value, max); }
+            get => Center - Extents;
+            set => SetMinMax(value, max);
         }
-        
+
         public Vector3 max
         {
-            get { return Center + Extents; }
-            set { SetMinMax(min, value); }
+            get => Center + Extents;
+            set => SetMinMax(min, value);
         }
 
         public override string ToString()

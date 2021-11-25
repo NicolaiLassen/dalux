@@ -23,6 +23,7 @@ namespace Algorithm.Lib
             int resolution = 100
         )
         {
+            // generate voxel grid
             var (voxelGrid, unit, (w, h, d))
                 = await Voxelizer.STLGPU(mesh, resolution);
 
@@ -30,11 +31,12 @@ namespace Algorithm.Lib
             var hunit = unit * 0.5f;
             var voxelPointGrid = new byte[w, h, d];
 
+            // runtime test
             var stopwatch = new Stopwatch();
 
             stopwatch.Start();
             // CPU 
-            /////// TODO MOVE TO GPU - threading
+            /////// TODO: MOVE TO GPU - threading, buffers
             await foreach (var vector3 in pts)
             {
                 var (x, y, z) = vector3 - new Vector3(hunit, hunit, hunit);
@@ -44,13 +46,15 @@ namespace Algorithm.Lib
 
                 // copy errors from voxel rep to cloud rep 
                 voxelPointGrid[xGridSteps, yGridSteps, zGridSteps]
+                    // read from flatten buffer as 3d byte[,,]
                     = voxelGrid[zGridSteps + d * (yGridSteps + h * xGridSteps)];
             }
 
             Console.WriteLine(
                 $"(Intersection) grid size: {w}x{h}x{d}, time: {stopwatch.ElapsedMilliseconds}ms");
             stopwatch.Stop();
-            
+
+
             // HELPER TEMP
             // TEEEEMP
 
@@ -63,7 +67,7 @@ namespace Algorithm.Lib
                     {
                         if (voxelPointGrid[x, y, z] == 0) continue;
                         var v = new Vector3(x * unit, y * unit, z * unit);
-                        var boxFacets = STLShapes.Voxel(v, hunit);
+                        var boxFacets = STLShapes.Cube(v, hunit);
                         stlFacets.AddRange(boxFacets);
                     }
                 }
