@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Algorithm.Models;
 using OpenTK.Mathematics;
 
-namespace Algorithm.Lib
+namespace Algorithm.Models
 {
     public class STL : IEnumerable<Facet>
     {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cloo;
+using Cloo.Bindings;
 
 namespace Algorithm.Services
 {
@@ -25,13 +26,15 @@ namespace Algorithm.Services
         {
             // TODO SET GPU FROM ENV NOT JUST 1
             var platform = ComputePlatform.Platforms[ComputePlatformIndex];
+            
+            var notify = new ComputeContextNotifier((info, ptr, size, dataPtr) => Console.WriteLine(info));
 
             // create context with all gpu devices
             var context = new ComputeContext(ComputeDeviceTypes.Gpu,
-                new ComputeContextPropertyList(platform), null, IntPtr.Zero);
+                new ComputeContextPropertyList(platform), notify, IntPtr.Zero);
 
             // create a command queue with gpu
-            var queue = new ComputeCommandQueue(context, context.Devices[0], ComputeCommandQueueFlags.None);
+            var queue = new ComputeCommandQueue(context, context.Devices[0], ComputeCommandQueueFlags.Profiling);
 
             return new ComputeService
             {

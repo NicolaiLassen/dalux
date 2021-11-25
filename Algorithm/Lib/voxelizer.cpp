@@ -17,6 +17,10 @@ kernel void voxelize
 ) 
 {
 
+          for(Triangle triangle in triangles){
+                    printf(""Index %d\n"", triangle.A);       
+                }
+
     for (int z = 0; z < d; z++) {
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {

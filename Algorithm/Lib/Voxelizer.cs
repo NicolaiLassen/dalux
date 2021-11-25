@@ -47,11 +47,12 @@ namespace Algorithm.Lib
                 global char* dst
             ) 
             {
-                for (int z = 0; z < d; z++) {
+               int index = get_global_id(0);     
+               for (int z = 0; z < d; z++) {
                     for (int y = 0; y < h; y++) {
-                        for (int x = 0; x < w; x++) {
-                            
+                        for (int x = 0; x < w; x++) {  
                             dst[z + d * (y + h * x)] = 5;
+                            
                         }
                     }                    
                 }
@@ -73,8 +74,7 @@ namespace Algorithm.Lib
             // compile opencl source
             program.Build(null, null, null, IntPtr.Zero);
 
-            // load chosen kernel from program
-            using var kernel = program.CreateKernel(VoxelizeFunctionName);
+            var kernel = program.CreateKernel(VoxelizeFunctionName);
 
             // mesh vertices in
             using var triangleBuffer = new ComputeBuffer<Triangle>(compute.Context,
@@ -126,7 +126,8 @@ namespace Algorithm.Lib
             var stopwatch = new Stopwatch();
 
             // execute kernel
-            compute.Queue.ExecuteTask(kernel, null);
+            compute.Queue.Execute(kernel, null,
+                new long[] {mesh.Triangles.Length}, null, null);
 
             // test alg time voxels
             stopwatch.Start();
