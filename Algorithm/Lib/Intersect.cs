@@ -53,27 +53,6 @@ namespace Algorithm.Lib
             Console.WriteLine(
                 $"(Intersection) grid size: {w}x{h}x{d}, time: {stopwatch.ElapsedMilliseconds}ms");
             stopwatch.Stop();
-
-
-            // HELPER TEMP
-            // TEEEEMP
-
-            var stlFacets = new List<Facet>();
-            for (var x = 0; x < voxelPointGrid.GetLength(0); x++)
-            {
-                for (var y = 0; y < voxelPointGrid.GetLength(1); y++)
-                {
-                    for (var z = 0; z < voxelPointGrid.GetLength(2); z++)
-                    {
-                        if (voxelPointGrid[x, y, z] == 0) continue;
-                        var v = new Vector3(x * unit, y * unit, z * unit);
-                        var boxFacets = STLShapes.Cube(v, hunit);
-                        stlFacets.AddRange(boxFacets);
-                    }
-                }
-            }
-
-            new STL(stlFacets).SaveAsBinary("voxels.stl");
         }
     }
 }

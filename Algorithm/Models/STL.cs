@@ -10,9 +10,8 @@ namespace Algorithm.Models
     public class STL : IEnumerable<Facet>
     {
         private List<Facet> Facets = new List<Facet>();
-        public Bounds Bounds = new Bounds();
+        public Bounds Bounds;
         public Triangle[] Triangles => GetTriangles();
-        public Vector3[] Vertices => GetVertices();
 
         public STL()
         {

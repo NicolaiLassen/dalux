@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using Algorithm.Helpers;
 using Algorithm.Models;
 using Algorithm.Services;
 using Cloo;
@@ -40,7 +43,6 @@ namespace Algorithm.Lib
                 Vector3 B; 
                 Vector3 C; 
                 Vector3 Normal;
-                Bounds Bounds;
             } Triangle; 
             
             typedef struct _Plane
@@ -157,20 +159,17 @@ namespace Algorithm.Lib
                int index = get_global_id(0);     
                Triangle tri = triangles[index];
 
-               float3 bCenter = (float3) 
-               (tri.Bounds.Center.X, tri.Bounds.Center.Y, tri.Bounds.Center.Z);
+               float3 start = (float3)(s.X, s.Y, s.Z);
 
-               float3 bExtents;
-               (tri.Bounds.Extents.X, tri.Bounds.Extents.Y, tri.Bounds.Extents.Z);
- 
-               float3 start = (float3)
-               (s.X, s.Y, s.Z);
+               float3 va = (float3)(tri.A.X, tri.A.Y, tri.A.X);
+               float3 vb = (float3)(tri.B.X, tri.B.Y, tri.B.X);
+               float3 vc = (float3)(tri.C.X, tri.C.Y, tri.C.X);
 
-               float3 bMin = bCenter - bExtents;
-               float3 bMax = bCenter + bExtents;
-       
-               float3 fmin = bMin - start; 
-               float3 fmax = bMax - start;     
+               float3 tbmin = min(min(va, vb), vc);
+               float3 tbmax = max(max(va, vb), vc);
+                
+               float3 fmin = tbmin - start; 
+               float3 fmax = tbmax - start;   
             
                int iMinX = round(fmin.x / unit);
                int iMinY = round(fmin.y / unit);
@@ -179,7 +178,7 @@ namespace Algorithm.Lib
                int iMaxX = round(fmax.x / unit);
                int iMaxY = round(fmax.y / unit);
                int iMaxZ = round(fmax.z / unit);
-               
+       
                iMinX = clamp(iMinX, 0, w - 1);
                iMinY = clamp(iMinY, 0, h - 1);
                iMinZ = clamp(iMinZ, 0, d - 1);
@@ -187,10 +186,11 @@ namespace Algorithm.Lib
                iMaxX = clamp(iMaxX, 0, w - 1);
                iMaxY = clamp(iMaxY, 0, h - 1);
                iMaxZ = clamp(iMaxZ, 0, d - 1);
-                
-               for (int z = iMinZ; z < iMaxZ; z++) {
+
+               int cnt = 0;
+               for (int x = iMinX; x < iMaxX; x++) {  
                     for (int y = iMinY; y < iMaxY; y++) {
-                        for (int x = iMinZ; x < iMaxY; x++) {  
+                        for (int z = iMinZ; z < iMaxZ; z++) {
 
                             float3 vUnit = (float3)(unit, unit, unit);
                             float3 vHUnit = (float3)(unit * 0.5, unit * 0.5, unit * 0.5);
@@ -200,15 +200,30 @@ namespace Algorithm.Lib
                             aabb.Center = center;
                             aabb.Min = center - vHUnit;
                             aabb.Max = center + vHUnit;
-                            if(intersects_tri_aabb(tri, aabb))
-                            {
-                                dst[z + d * (y + h * x)] = 1;
-                            }
+                         
+                            dst[z + d * (y + h * x)] = 1;
                         }
                     }                    
                 }
             }
         ";
+
+
+        private static T[,,] Expand<T>(T[] value, int length1, int length2, int length3)
+        {
+            T[,,] result = new T[length1, length2, length3];
+
+            for (int i = 0; i < value.Length; ++i)
+            {
+                int r = i / (length3 * length2);
+                int c = i / length3 % length2;
+                int h = i % length3;
+
+                result[r, c, h] = value[i];
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Convert triangle mesh into voxel grid representation
@@ -277,9 +292,9 @@ namespace Algorithm.Lib
             var stopwatch = new Stopwatch();
 
             // execute kernel
-            compute.Queue.ExecuteTask(kernel, null);
-            // compute.Queue.Execute(kernel, null,
-            //     new long[] {mesh.Triangles.Length}, null, null);
+            // compute.Queue.ExecuteTask(kernel, null);
+            compute.Queue.Execute(kernel, null,
+                new long[] {mesh.Triangles.Length}, null, null);
 
             // test alg time voxels
             stopwatch.Start();
@@ -292,6 +307,27 @@ namespace Algorithm.Lib
 
             // release data from GPU buffer
             compute.Queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
+
+            Console.WriteLine(dst.Count(v => v == 1));
+
+            var t = Expand(dst, w, h, d);
+
+            var stlFacets = new List<Facet>();
+            for (var x = 0; x < t.GetLength(0); x++)
+            {
+                for (var y = 0; y < t.GetLength(1); y++)
+                {
+                    for (var z = 0; z < t.GetLength(2); z++)
+                    {
+                        if (t[x, y, z] == 0) continue;
+                        var v = new Vector3(x * unit, y * unit, z * unit);
+                        var boxFacets = STLShapes.Cube(v, hunit);
+                        stlFacets.AddRange(boxFacets);
+                    }
+                }
+            }
+
+            new STL(stlFacets).SaveAsBinary("voxels.stl");
 
             // expand back buffer to 3d e.g. byte[,,]
             return (dst, unit, (w, h, d));

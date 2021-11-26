@@ -30,7 +30,7 @@ namespace Algorithm
             stl.SaveAsBinary("mesh.stl");
 
             // generate error map
-            await Intersect.MeshPointCloudIntersectionAsync(stl, ptsStream, 100);
+            await Intersect.MeshPointCloudIntersectionAsync(stl, ptsStream, 50);
         }
     }
 }

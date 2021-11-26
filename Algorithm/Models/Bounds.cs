@@ -7,12 +7,6 @@ namespace Algorithm.Models
         public Vector3 Center { get; set; }
         public Vector3 Extents { get; set; }
 
-        public Bounds(Vector3 center, Vector3 size)
-        {
-            Center = center;
-            Extents = size * 0.5F;
-        }
-
         public Vector3 size
         {
             get => Extents * 2.0F;
