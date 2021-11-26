@@ -2,14 +2,10 @@ using OpenTK.Mathematics;
 
 namespace Algorithm.Models
 {
-    public class Bounds
+    public struct Bounds
     {
         public Vector3 Center { get; set; }
         public Vector3 Extents { get; set; }
-
-        public Bounds()
-        {
-        }
 
         public Bounds(Vector3 center, Vector3 size)
         {
