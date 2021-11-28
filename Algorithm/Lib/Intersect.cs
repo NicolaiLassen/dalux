@@ -7,6 +7,13 @@ using OpenTK.Mathematics;
 
 namespace Algorithm.Lib
 {
+    public static class IntersectType
+    {
+        public static readonly byte PointOnsideOfMesh;
+        public static readonly byte PointOutsideOfMesh;
+        public static readonly byte PointInsideOfMesh;
+    }
+
     public static class Intersect
     {
         /// <summary>
@@ -46,7 +53,7 @@ namespace Algorithm.Lib
 
                 // make check for neighbours branching
 
-                // gird wrong place
+                // grid wrong place
                 if (xGridSteps > w || yGridSteps > h || zGridSteps > d)
                 {
                     // DO STUFF
@@ -57,16 +64,17 @@ namespace Algorithm.Lib
                 var voxelData = voxelGrid[zGridSteps + d * (yGridSteps + h * xGridSteps)];
 
                 // point on mesh
-                if (voxelData == 1) continue;
+                if (voxelData == VoxelGridType.OnMesh) continue;
 
                 // point outside model mesh
-                if (voxelData == 0)
+                if (voxelData == VoxelGridType.OutOfMesh)
                 {
-                    voxelPointGrid[xGridSteps, yGridSteps, zGridSteps] = 1;
+                    voxelPointGrid[xGridSteps, yGridSteps, zGridSteps] = IntersectType.PointOutsideOfMesh;
                 }
 
                 // point inside model mesh
-                voxelPointGrid[xGridSteps, yGridSteps, zGridSteps] = 2;
+                // VoxelGrid.OutOfMesh
+                voxelPointGrid[xGridSteps, yGridSteps, zGridSteps] = IntersectType.PointInsideOfMesh;
             }
 
             Console.WriteLine(

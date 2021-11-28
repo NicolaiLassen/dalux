@@ -10,6 +10,16 @@ using OpenTK.Mathematics;
 
 namespace Algorithm.Lib
 {
+    public static class VoxelGridType
+    {
+        // 0: out of mesh
+        // 1: on mesh
+        // 2: inside mesh
+        public static readonly byte OutOfMesh = 0;
+        public static readonly byte OnMesh = 1;
+        public static readonly byte InsideMesh = 2;
+    }
+
     public class Voxelizer
     {
         /// <summary>
@@ -293,10 +303,6 @@ namespace Algorithm.Lib
             kernel.SetValueArgument(6, e);
 
             // set out buffer for byte matrix
-            // 0: out of mesh
-            // 1: on mesh
-            // 2: inside mesh
-
             // flatten buffer representation 
             var dst = new byte[w * h * d];
 
