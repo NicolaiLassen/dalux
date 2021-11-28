@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Algorithm.Helpers;
 using Algorithm.Models;
@@ -217,6 +216,28 @@ namespace Algorithm.Lib
             return result;
         }
 
+        public static void SaveVoxelGridAsSTL(byte[] dst, int w, int h, int d, float unit, float hunit)
+        {
+            var t = Expand(dst, w, h, d);
+
+            var stlFacets = new List<Facet>();
+            for (var x = 0; x < t.GetLength(0); x++)
+            {
+                for (var y = 0; y < t.GetLength(1); y++)
+                {
+                    for (var z = 0; z < t.GetLength(2); z++)
+                    {
+                        if (t[x, y, z] == 0) continue;
+                        var v = new Vector3(x * unit, y * unit, z * unit);
+                        var boxFacets = STLShapes.Cube(v, hunit);
+                        stlFacets.AddRange(boxFacets);
+                    }
+                }
+            }
+
+            new STL(stlFacets).SaveAsBinary("voxels.stl");
+        }
+
         /// <summary>
         /// Convert triangle mesh into voxel grid representation
         /// </summary>
@@ -255,7 +276,7 @@ namespace Algorithm.Lib
             var w = (int) MathHelper.Ceiling(f / unit) + 1;
             var h = (int) MathHelper.Ceiling(f1 / unit) + 1;
             var d = (int) MathHelper.Ceiling(z1 / unit) + 1;
-            
+
             // set units
             kernel.SetValueArgument(1, unit);
 
@@ -283,7 +304,6 @@ namespace Algorithm.Lib
             // time
             var stopwatch = new Stopwatch();
 
-
             // execute kernel
             // compute.Queue.ExecuteTask(kernel, null);
             compute.Queue.Execute(kernel, null,
@@ -301,27 +321,6 @@ namespace Algorithm.Lib
             // release data from GPU buffer
             compute.Queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
 
-            Console.WriteLine(dst.Count(v => v == 1));
-
-            var t = Expand(dst, w, h, d);
-
-            var stlFacets = new List<Facet>();
-            for (var x = 0; x < t.GetLength(0); x++)
-            {
-                for (var y = 0; y < t.GetLength(1); y++)
-                {
-                    for (var z = 0; z < t.GetLength(2); z++)
-                    {
-                        if (t[x, y, z] == 0) continue;
-                        var v = new Vector3(x * unit, y * unit, z * unit);
-                        var boxFacets = STLShapes.Cube(v, hunit);
-                        stlFacets.AddRange(boxFacets);
-                    }
-                }
-            }
-
-            new STL(stlFacets).SaveAsBinary("voxels.stl");
-            Environment.Exit(0);
             // expand back buffer to 3d e.g. byte[,,]
             return (dst, unit, (w, h, d));
         }

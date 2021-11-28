@@ -23,14 +23,14 @@ namespace Algorithm
 
             // import mesh
             // var meshPath = Path.Combine(TEMP_PATH, "alignedIFCfile.stl"); // for speed test
-            var meshPath = Path.Combine(TEMP_PATH, "Stanford_Bunny.STL");
+            var meshPath = Path.Combine(TEMP_PATH, "part1_solid_correct.STL");
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
 
             // stl.NormalizeToCenter();
             stl.SaveAsBinary("mesh.stl");
 
             // generate error map
-            await Intersect.MeshPointCloudIntersectionAsync(stl, ptsStream, 50);
+            await Intersect.MeshPointCloudIntersectionAsync(stl, ptsStream, 100);
         }
     }
 }
