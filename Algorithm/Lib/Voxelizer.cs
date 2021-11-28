@@ -216,10 +216,15 @@ namespace Algorithm.Lib
             return result;
         }
 
-        public static void SaveVoxelGridAsSTL(byte[] dst, int w, int h, int d, float unit, float hunit)
+        public static void SaveVoxelGridAsSTL(byte[] dst, float unit, int w, int h, int d)
         {
             var t = Expand(dst, w, h, d);
+            SaveVoxelGridAsSTL(t, unit, "voxels.stl");
+        }
 
+        public static void SaveVoxelGridAsSTL(byte[,,] t, float unit, string name)
+        {
+            var hunit = unit * 0.5f;
             var stlFacets = new List<Facet>();
             for (var x = 0; x < t.GetLength(0); x++)
             {
@@ -235,7 +240,7 @@ namespace Algorithm.Lib
                 }
             }
 
-            new STL(stlFacets).SaveAsBinary("voxels.stl");
+            new STL(stlFacets).SaveAsBinary(name);
         }
 
         /// <summary>
@@ -288,14 +293,12 @@ namespace Algorithm.Lib
             kernel.SetValueArgument(6, e);
 
             // set out buffer for byte matrix
-            // correct
             // 0: out of mesh
             // 1: on mesh
             // 2: inside mesh
 
             // flatten buffer representation 
-            var flatten = w * h * d;
-            var dst = new byte[flatten];
+            var dst = new byte[w * h * d];
 
             using var dstBuffer = new ComputeBuffer<byte>(compute.Context,
                 ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, dst);
