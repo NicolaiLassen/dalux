@@ -173,9 +173,9 @@ namespace Algorithm.Lib
                iMinY = clamp(iMinY, 0, h - 1);
                iMinZ = clamp(iMinZ, 0, d - 1);
 
-               iMaxX = clamp(iMaxX, 0, w - 1);
-               iMaxY = clamp(iMaxY, 0, h - 1);
-               iMaxZ = clamp(iMaxZ, 0, d - 1);
+               iMaxX = clamp(iMaxX + 1, 0, w - 1);
+               iMaxY = clamp(iMaxY + 1, 0, h - 1);
+               iMaxZ = clamp(iMaxZ + 1, 0, d - 1);
 
                float3 vUnit = (float3)(unit, unit, unit);
                float3 vHUnit = (float3)(unit * 0.5, unit * 0.5, unit * 0.5);
@@ -249,26 +249,13 @@ namespace Algorithm.Lib
 
             var s = bounds.min - new Vector3(hunit, hunit, hunit);
             var e = bounds.max + new Vector3(hunit, hunit, hunit);
-            var size = e - s;
+            var (f, f1, z1) = e - s;
 
             // ceiling of grid max size for allocation
-            var w = (int) MathHelper.Ceiling(size.X / unit);
-            var h = (int) MathHelper.Ceiling(size.Y / unit);
-            var d = (int) MathHelper.Ceiling(size.Z / unit);
-
-
-            var tri = mesh.Triangles[200];
-
-            var tbmin = Vector3.ComponentMin(Vector3.ComponentMin(tri.A, tri.B), tri.C);
-            var tbmax = Vector3.ComponentMax(Vector3.ComponentMax(tri.A, tri.B), tri.C);
-
+            var w = (int) MathHelper.Ceiling(f / unit) + 1;
+            var h = (int) MathHelper.Ceiling(f1 / unit) + 1;
+            var d = (int) MathHelper.Ceiling(z1 / unit) + 1;
             
-            Console.WriteLine(MathHelper.Clamp(MathHelper.Round((tbmin - s).X / unit), 0, w - 1));
-            Console.WriteLine(MathHelper.Clamp(MathHelper.Round((tbmin - s).Y / unit), 0, d - 1));
-            Console.WriteLine(MathHelper.Clamp(MathHelper.Round((tbmin - s).Z / unit), 0, h - 1));
-            
-            Console.WriteLine("----");
-
             // set units
             kernel.SetValueArgument(1, unit);
 
