@@ -23,7 +23,7 @@ namespace Algorithm
 
             // import mesh
             // var meshPath = Path.Combine(TEMP_PATH, "alignedIFCfile.stl"); // for speed test
-            var meshPath = Path.Combine(TEMP_PATH, "part1_solid_correct.STL");
+            var meshPath = Path.Combine(TEMP_PATH, "Stanford_Bunny.STL");
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
 
             // stl.NormalizeToCenter();

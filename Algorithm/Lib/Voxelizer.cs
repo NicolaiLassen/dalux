@@ -26,23 +26,17 @@ namespace Algorithm.Lib
             @"
             typedef struct _Vector3 
             { 
-                float X; 
-                float Y; 
-                float Z; 
+                float X, Y, Z;
             } Vector3; 
 
             typedef struct _Bounds 
             { 
-                Vector3 Center; 
-                Vector3 Extents;
+                Vector3 Center, Extents; 
             } Bounds; 
 
             typedef struct _Triangle 
             { 
-                Vector3 A; 
-                Vector3 B; 
-                Vector3 C; 
-                Vector3 Normal;
+                Vector3 A, B, C, Normal;
             } Triangle; 
             
             typedef struct _Plane
@@ -53,9 +47,7 @@ namespace Algorithm.Lib
 
             typedef struct _AABB
             {
-                float3 Max;
-                float3 Min;
-                float3 Center;             
+                float3 Max, Min, Center;        
             } AABB;
 
             bool intersects_plane_aabb(Plane pl, AABB aabb)
@@ -81,14 +73,10 @@ namespace Algorithm.Lib
                 return !((maxP < -r) || (r < minP));
             }
 
-            bool intersects_tri_aabb(Triangle tri, AABB aabb)
+            bool intersects_tri_aabb(float3 va, float3 vb, float3 vc, AABB aabb)
             {
                 float p0, p1, p2, r;
-
                 float3 center = aabb.Center, extents = aabb.Max - center;
-                float3 va = (float3)(tri.A.X, tri.A.Y, tri.A.X);
-                float3 vb = (float3)(tri.B.X, tri.B.Y, tri.B.X);
-                float3 vc = (float3)(tri.C.X, tri.C.Y, tri.C.X);
 
                 float3 v0 = va - center,
                 v1 = vb - center,
@@ -107,6 +95,8 @@ namespace Algorithm.Lib
                 a20 = (float3)(-f0.y, f0.x, 0), // Z and f0
                 a21 = (float3)(-f1.y, f1.x, 0), // Z and f1
                 a22 = (float3)(-f2.y, f2.x, 0); // Z and f2
+
+                //printf(""%0.6f"", extents.x);
 
                 if (
                     !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a00) ||
@@ -161,24 +151,24 @@ namespace Algorithm.Lib
 
                float3 start = (float3)(s.X, s.Y, s.Z);
 
-               float3 va = (float3)(tri.A.X, tri.A.Y, tri.A.X);
-               float3 vb = (float3)(tri.B.X, tri.B.Y, tri.B.X);
-               float3 vc = (float3)(tri.C.X, tri.C.Y, tri.C.X);
+               float3 va = (float3)(tri.A.X, tri.A.Y, tri.A.Z);
+               float3 vb = (float3)(tri.B.X, tri.B.Y, tri.B.Z);
+               float3 vc = (float3)(tri.C.X, tri.C.Y, tri.C.Z);
 
                float3 tbmin = min(min(va, vb), vc);
                float3 tbmax = max(max(va, vb), vc);
-                
-               float3 fmin = tbmin - start; 
-               float3 fmax = tbmax - start;   
-            
-               int iMinX = round(fmin.x / unit);
-               int iMinY = round(fmin.y / unit);
-               int iMinZ = round(fmin.z / unit);
 
-               int iMaxX = round(fmax.x / unit);
-               int iMaxY = round(fmax.y / unit);
-               int iMaxZ = round(fmax.z / unit);
-       
+               float3 fmin = tbmin - start; 
+               float3 fmax = tbmax - start; 
+
+               int iMinX = round(floor(fmin.x) / unit);
+               int iMinY = round(floor(fmin.y) / unit);
+               int iMinZ = round(floor(fmin.z) / unit);
+
+               int iMaxX = round(ceil(fmax.x) / unit);
+               int iMaxY = round(ceil(fmax.y) / unit);
+               int iMaxZ = round(ceil(fmax.z) / unit);
+
                iMinX = clamp(iMinX, 0, w - 1);
                iMinY = clamp(iMinY, 0, h - 1);
                iMinZ = clamp(iMinZ, 0, d - 1);
@@ -187,37 +177,39 @@ namespace Algorithm.Lib
                iMaxY = clamp(iMaxY, 0, h - 1);
                iMaxZ = clamp(iMaxZ, 0, d - 1);
 
-               int cnt = 0;
+               float3 vUnit = (float3)(unit, unit, unit);
+               float3 vHUnit = (float3)(unit * 0.5, unit * 0.5, unit * 0.5);
+         
                for (int x = iMinX; x < iMaxX; x++) {  
                     for (int y = iMinY; y < iMaxY; y++) {
                         for (int z = iMinZ; z < iMaxZ; z++) {
 
-                            float3 vUnit = (float3)(unit, unit, unit);
-                            float3 vHUnit = (float3)(unit * 0.5, unit * 0.5, unit * 0.5);
-                            float3 center = (float3)(x, y, z) * start + vUnit;
+                            float3 center = (float3)(x, y, z)  * vUnit + start;
                             
                             AABB aabb;
                             aabb.Center = center;
                             aabb.Min = center - vHUnit;
                             aabb.Max = center + vHUnit;
                          
-                            dst[z + d * (y + h * x)] = 1;
+                            if(intersects_tri_aabb(va, vb, vc, aabb))
+                            {
+                                dst[z + d * (y + h * x)] = 1;
+                            }
                         }
                     }                    
                 }
             }
         ";
 
-
-        private static T[,,] Expand<T>(T[] value, int length1, int length2, int length3)
+        private static T[,,] Expand<T>(IReadOnlyList<T> value, int length1, int length2, int length3)
         {
-            T[,,] result = new T[length1, length2, length3];
+            var result = new T[length1, length2, length3];
 
-            for (int i = 0; i < value.Length; ++i)
+            for (var i = 0; i < value.Count; ++i)
             {
-                int r = i / (length3 * length2);
-                int c = i / length3 % length2;
-                int h = i % length3;
+                var r = i / (length3 * length2);
+                var c = i / length3 % length2;
+                var h = i % length3;
 
                 result[r, c, h] = value[i];
             }
@@ -257,12 +249,25 @@ namespace Algorithm.Lib
 
             var s = bounds.min - new Vector3(hunit, hunit, hunit);
             var e = bounds.max + new Vector3(hunit, hunit, hunit);
-            var (fx, fy, fz) = e - s;
+            var size = e - s;
 
             // ceiling of grid max size for allocation
-            var w = (int) MathHelper.Ceiling(fx / unit);
-            var h = (int) MathHelper.Ceiling(fy / unit);
-            var d = (int) MathHelper.Ceiling(fz / unit);
+            var w = (int) MathHelper.Ceiling(size.X / unit);
+            var h = (int) MathHelper.Ceiling(size.Y / unit);
+            var d = (int) MathHelper.Ceiling(size.Z / unit);
+
+
+            var tri = mesh.Triangles[200];
+
+            var tbmin = Vector3.ComponentMin(Vector3.ComponentMin(tri.A, tri.B), tri.C);
+            var tbmax = Vector3.ComponentMax(Vector3.ComponentMax(tri.A, tri.B), tri.C);
+
+            
+            Console.WriteLine(MathHelper.Clamp(MathHelper.Round((tbmin - s).X / unit), 0, w - 1));
+            Console.WriteLine(MathHelper.Clamp(MathHelper.Round((tbmin - s).Y / unit), 0, d - 1));
+            Console.WriteLine(MathHelper.Clamp(MathHelper.Round((tbmin - s).Z / unit), 0, h - 1));
+            
+            Console.WriteLine("----");
 
             // set units
             kernel.SetValueArgument(1, unit);
@@ -290,6 +295,7 @@ namespace Algorithm.Lib
 
             // time
             var stopwatch = new Stopwatch();
+
 
             // execute kernel
             // compute.Queue.ExecuteTask(kernel, null);
@@ -328,7 +334,7 @@ namespace Algorithm.Lib
             }
 
             new STL(stlFacets).SaveAsBinary("voxels.stl");
-
+            Environment.Exit(0);
             // expand back buffer to 3d e.g. byte[,,]
             return (dst, unit, (w, h, d));
         }
