@@ -305,7 +305,6 @@ namespace Algorithm.Lib
             var stopwatch = new Stopwatch();
 
             // execute kernel
-            // compute.Queue.ExecuteTask(kernel, null);
             compute.Queue.Execute(kernel, null,
                 new long[] {mesh.Triangles.Length}, null, null);
 
