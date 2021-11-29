@@ -35,7 +35,7 @@ namespace Algorithm.Lib
 
             // init arguments for copy of errors
             var hunit = unit * 0.5f;
-            var voxelPointGrid = new byte[w, h, d];
+            var selectedForSearch = new Dictionary<Vector3, byte>();
 
             // runtime test
             var stopwatch = new Stopwatch();
@@ -47,21 +47,27 @@ namespace Algorithm.Lib
             await foreach (var vector3 in pts)
             {
                 var (x, y, z) = vector3 - new Vector3(hunit, hunit, hunit);
-                var xGridSteps = (int) Math.Round(x / unit);
-                var yGridSteps = (int) Math.Round(y / unit);
-                var zGridSteps = (int) Math.Round(z / unit);
+                var xGridIndex = (int) Math.Round(x / unit);
+                var yGridIndex = (int) Math.Round(y / unit);
+                var zGridIndex = (int) Math.Round(z / unit);
 
-                // make check for neighbours branching
+                var key = new Vector3(xGridIndex, yGridIndex, zGridIndex);
+                var index = zGridIndex + d * (yGridIndex + h * xGridIndex);
+
+                if (selectedForSearch.ContainsKey(key))
+                {
+                    continue;
+                }
 
                 // grid wrong place
-                if (xGridSteps > w || yGridSteps > h || zGridSteps > d)
+                if (xGridIndex > w || yGridIndex > h || zGridIndex > d)
                 {
                     // DO STUFF
                     continue;
                 }
 
                 // data form voxel alg
-                var voxelData = voxelGrid[zGridSteps + d * (yGridSteps + h * xGridSteps)];
+                var voxelData = voxelGrid[index];
 
                 // point on mesh
                 if (voxelData == VoxelGridType.OnMesh) continue;
@@ -69,12 +75,23 @@ namespace Algorithm.Lib
                 // point outside model mesh
                 if (voxelData == VoxelGridType.OutOfMesh)
                 {
-                    voxelPointGrid[xGridSteps, yGridSteps, zGridSteps] = IntersectType.PointOutsideOfMesh;
+                    selectedForSearch.Add(key, IntersectType.PointOutsideOfMesh);
+                    continue;
                 }
 
                 // point inside model mesh
                 // VoxelGrid.OutOfMesh
-                voxelPointGrid[xGridSteps, yGridSteps, zGridSteps] = IntersectType.PointInsideOfMesh;
+                selectedForSearch.Add(key, IntersectType.PointInsideOfMesh);
+            }
+
+            // make check for neighbours branching
+            var voxelPointGrid = new byte[w, h, d];
+
+            foreach (var (pos, value) in selectedForSearch)
+            {
+                Console.WriteLine(pos);
+
+                // var index = pos.Z + d * (pos.Y + h * pos.X);
             }
 
             Console.WriteLine(
