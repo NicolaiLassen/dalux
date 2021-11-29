@@ -203,9 +203,10 @@ namespace Algorithm.Lib
 
                             if(intersects_tri_aabb(va, vb, vc, aabb))
                             {    
-                                // on mesh border
                                 int index = z + d * (y + h * x);
+                                // on mesh border
                                 voxelDST[index] = 1;
+                                // is front or back
                                 frontDST[index] = isf;
                             }
                         }
@@ -272,12 +273,14 @@ namespace Algorithm.Lib
             // compile opencl source
             program.Build(null, null, null, IntPtr.Zero);
 
-            var kernel = program.CreateKernel(VoxelizeSurfaceFunctionName);
+            // SURFACE 
+            
+            var surfaceKernel = program.CreateKernel(VoxelizeSurfaceFunctionName);
 
             // mesh vertices in
             using var triangleBuffer = new ComputeBuffer<Triangle>(compute.Context,
                 ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, mesh.Triangles);
-            kernel.SetMemoryArgument(0, triangleBuffer);
+            surfaceKernel.SetMemoryArgument(0, triangleBuffer);
 
             // parameters for the voxelizer alg
             var bounds = mesh.Bounds;
@@ -297,14 +300,14 @@ namespace Algorithm.Lib
             var d = (int) MathHelper.Ceiling(z1 / unit) + 1;
 
             // set units
-            kernel.SetValueArgument(1, unit);
+            surfaceKernel.SetValueArgument(1, unit);
 
             // set bounds
-            kernel.SetValueArgument(2, w);
-            kernel.SetValueArgument(3, h);
-            kernel.SetValueArgument(4, d);
-            kernel.SetValueArgument(5, s);
-            kernel.SetValueArgument(6, e);
+            surfaceKernel.SetValueArgument(2, w);
+            surfaceKernel.SetValueArgument(3, h);
+            surfaceKernel.SetValueArgument(4, d);
+            surfaceKernel.SetValueArgument(5, s);
+            surfaceKernel.SetValueArgument(6, e);
 
             // set out buffer for byte matrix
             // flatten buffer representation 
@@ -312,19 +315,19 @@ namespace Algorithm.Lib
 
             using var voxelDstBuffer = new ComputeBuffer<byte>(compute.Context,
                 ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, voxelDst);
-            kernel.SetMemoryArgument(7, voxelDstBuffer);
+            surfaceKernel.SetMemoryArgument(7, voxelDstBuffer);
 
             var frontDst = new bool[w * h * d];
 
             using var frontDstBuffer = new ComputeBuffer<bool>(compute.Context,
                 ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, frontDst);
-            kernel.SetMemoryArgument(8, frontDstBuffer);
+            surfaceKernel.SetMemoryArgument(8, frontDstBuffer);
 
             // time
             var stopwatch = new Stopwatch();
 
             // execute kernel
-            compute.Queue.Execute(kernel, null,
+            compute.Queue.Execute(surfaceKernel, null,
                 new long[] {mesh.Triangles.Length}, null, null);
 
             // test alg time voxels
@@ -332,20 +335,17 @@ namespace Algorithm.Lib
 
             // wait for completion
             compute.Queue.Finish();
-
-            Console.WriteLine($"(Voxelizer) grid size: {w}x{h}x{d}, time: {stopwatch.ElapsedMilliseconds}ms");
-            stopwatch.Stop();
-
+            
             // release data from GPU buffer
             compute.Queue.ReadFromBuffer(voxelDstBuffer, ref voxelDst, true, null);
             compute.Queue.ReadFromBuffer(frontDstBuffer, ref frontDst, true, null);
             
-            foreach (var b in frontDst)
-            {
-                Console.WriteLine(b);
-            }
+            // VOLUME
             
-            Environment.Exit(0);
+            // var volumeKernel = program.CreateKernel(VoxelizeVolumeFunctionName);
+            //
+            Console.WriteLine($"(Voxelizer) grid size: {w}x{h}x{d}, time: {stopwatch.ElapsedMilliseconds}ms");
+            stopwatch.Stop();
 
             // expand back buffer to 3d e.g. byte[,,]
             return (voxelDst, unit, (w, h, d));
