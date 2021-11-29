@@ -12,12 +12,9 @@ namespace Algorithm.Lib
 {
     public static class VoxelGridType
     {
-        // 0: out of mesh
-        // 1: on mesh
-        // 2: inside mesh
-        public static readonly byte OutOfMesh = 0;
-        public static readonly byte OnMesh = 1;
-        public static readonly byte InsideMesh = 2;
+        public const byte OutOfMesh = 0;
+        public const byte OnMesh = 1;
+        public const byte InsideMesh = 2;
     }
 
     public class Voxelizer

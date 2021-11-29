@@ -9,9 +9,8 @@ namespace Algorithm.Lib
 {
     public static class IntersectType
     {
-        public static readonly byte PointOnsideOfMesh;
-        public static readonly byte PointOutsideOfMesh;
-        public static readonly byte PointInsideOfMesh;
+        public const byte PointOutsideOfMesh = 0;
+        public const byte PointInsideOfMesh = 1;
     }
 
     public static class Intersect
@@ -89,9 +88,8 @@ namespace Algorithm.Lib
 
             foreach (var (pos, value) in selectedForSearch)
             {
-                Console.WriteLine(pos);
-
-                // var index = pos.Z + d * (pos.Y + h * pos.X);
+                var index = pos.Z + d * (pos.Y + h * pos.X);
+                Console.WriteLine(value);
             }
 
             Console.WriteLine(
