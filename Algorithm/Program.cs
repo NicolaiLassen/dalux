@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Algorithm.Lib;
 using Algorithm.Models;
@@ -22,15 +23,14 @@ namespace Algorithm
             var ptsStream = PTS.ConsumeStreamAsync(ptsPaths, 1);
 
             // import mesh
-            // var meshPath = Path.Combine(TEMP_PATH, "alignedIFCfile.stl"); // for speed test
-            var meshPath = Path.Combine(TEMP_PATH, "part1_solid_correct.STL");
+            var meshPath = Path.Combine(TEMP_PATH, "alignedIFCfile.STL");
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
 
             // stl.NormalizeToCenter();
             stl.SaveAsBinary("mesh.stl");
 
-            // generate error map
-            await Intersect.MeshPointCloudIntersectionAsync(stl, ptsStream, 100);
+            // generate error grid
+            await Intersect.MeshPointCloudIntersectionAsync(stl, ptsStream, 256);
         }
     }
 }

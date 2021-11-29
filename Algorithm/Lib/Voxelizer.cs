@@ -22,7 +22,9 @@ namespace Algorithm.Lib
         /// <summary>
         /// OpenCL kernel function name
         /// </summary>
-        private const string VoxelizeFunctionName = "voxelize";
+        private const string VoxelizeSurfaceFunctionName = "voxelize_surface";
+
+        private const string VoxelizeVolumeFunctionName = "voxelize_volume";
 
         /// <summary>
         /// OpenCl kernel source
@@ -102,8 +104,6 @@ namespace Algorithm.Lib
                 a21 = (float3)(-f1.y, f1.x, 0), // Z and f1
                 a22 = (float3)(-f2.y, f2.x, 0); // Z and f2
 
-                //printf(""%0.6f"", extents.x);
-
                 if (
                     !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a00) ||
                     !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a01) ||
@@ -140,7 +140,7 @@ namespace Algorithm.Lib
                 return intersects_plane_aabb(pl, aabb);
             }
 
-            kernel void voxelize
+            kernel void voxelize_surface
             (
                 global read_only Triangle* triangles,
                 float unit,
@@ -149,7 +149,8 @@ namespace Algorithm.Lib
                 int d,
                 Vector3 s,
                 Vector3 e,
-                global char* dst
+                global char* voxelDST,
+                global bool* frontDST
             ) 
             {
                int index = get_global_id(0);     
@@ -160,6 +161,9 @@ namespace Algorithm.Lib
                float3 va = (float3)(tri.A.X, tri.A.Y, tri.A.Z);
                float3 vb = (float3)(tri.B.X, tri.B.Y, tri.B.Z);
                float3 vc = (float3)(tri.C.X, tri.C.Y, tri.C.Z);
+
+               float3 normal = cross((vb - va), (vc - vb));
+               bool isf = dot(normal, (float3)(0, 0, 1)) < 0;
 
                float3 tbmin = min(min(va, vb), vc);
                float3 tbmax = max(max(va, vb), vc);
@@ -196,10 +200,13 @@ namespace Algorithm.Lib
                             aabb.Center = center;
                             aabb.Min = center - vHUnit;
                             aabb.Max = center + vHUnit;
-                         
+
                             if(intersects_tri_aabb(va, vb, vc, aabb))
-                            {
-                                dst[z + d * (y + h * x)] = 1;
+                            {    
+                                // on mesh border
+                                int index = z + d * (y + h * x);
+                                voxelDST[index] = 1;
+                                frontDST[index] = isf;
                             }
                         }
                     }                    
@@ -265,7 +272,7 @@ namespace Algorithm.Lib
             // compile opencl source
             program.Build(null, null, null, IntPtr.Zero);
 
-            var kernel = program.CreateKernel(VoxelizeFunctionName);
+            var kernel = program.CreateKernel(VoxelizeSurfaceFunctionName);
 
             // mesh vertices in
             using var triangleBuffer = new ComputeBuffer<Triangle>(compute.Context,
@@ -301,11 +308,17 @@ namespace Algorithm.Lib
 
             // set out buffer for byte matrix
             // flatten buffer representation 
-            var dst = new byte[w * h * d];
+            var voxelDst = new byte[w * h * d];
 
-            using var dstBuffer = new ComputeBuffer<byte>(compute.Context,
-                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, dst);
-            kernel.SetMemoryArgument(7, dstBuffer);
+            using var voxelDstBuffer = new ComputeBuffer<byte>(compute.Context,
+                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, voxelDst);
+            kernel.SetMemoryArgument(7, voxelDstBuffer);
+
+            var frontDst = new bool[w * h * d];
+
+            using var frontDstBuffer = new ComputeBuffer<bool>(compute.Context,
+                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, frontDst);
+            kernel.SetMemoryArgument(8, frontDstBuffer);
 
             // time
             var stopwatch = new Stopwatch();
@@ -324,10 +337,18 @@ namespace Algorithm.Lib
             stopwatch.Stop();
 
             // release data from GPU buffer
-            compute.Queue.ReadFromBuffer(dstBuffer, ref dst, true, null);
+            compute.Queue.ReadFromBuffer(voxelDstBuffer, ref voxelDst, true, null);
+            compute.Queue.ReadFromBuffer(frontDstBuffer, ref frontDst, true, null);
+            
+            foreach (var b in frontDst)
+            {
+                Console.WriteLine(b);
+            }
+            
+            Environment.Exit(0);
 
             // expand back buffer to 3d e.g. byte[,,]
-            return (dst, unit, (w, h, d));
+            return (voxelDst, unit, (w, h, d));
         }
     }
 }

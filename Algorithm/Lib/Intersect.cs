@@ -32,6 +32,8 @@ namespace Algorithm.Lib
             var (voxelGrid, unit, (w, h, d))
                 = await Voxelizer.STLGPU(mesh, resolution);
 
+            Voxelizer.SaveVoxelGridAsSTL(voxelGrid, unit, w, h, d);
+
             // init arguments for copy of errors
             var hunit = unit * 0.5f;
             var selectedForSearch = new Dictionary<Vector3, byte>();
@@ -84,12 +86,14 @@ namespace Algorithm.Lib
             }
 
             // make check for neighbours branching
+            //   |
+            // - E -
+            //   |
             var voxelPointGrid = new byte[w, h, d];
 
             foreach (var (pos, value) in selectedForSearch)
             {
                 var index = pos.Z + d * (pos.Y + h * pos.X);
-                Console.WriteLine(value);
             }
 
             Console.WriteLine(
