@@ -19,11 +19,11 @@ namespace Algorithm
 
             // point stream async itr
             //  var ptsPaths = Directory.GetFiles(Path.Combine(TEMP_PATH, "pts")) // for speed test
-            var ptsPaths = new[] {Path.Combine(TEMP_PATH, "mesh_not_correct.pts")};
-            var ptsStream = PTS.ConsumeStreamAsync(ptsPaths, 1);
+            var ptsPaths = new[] {Path.Combine(TEMP_PATH, "COWI_25pct__SW181.pts")};
+            var ptsStream = PTS.PointStreamAsync(ptsPaths, 0.001);
 
             // import mesh
-            var meshPath = Path.Combine(TEMP_PATH, "alignedIFCfile.STL");
+            var meshPath = Path.Combine(TEMP_PATH, "part1_solid_correct.STL");
             var stl = STL.Read(new BinaryReader(new FileStream(meshPath, FileMode.Open)));
 
             // stl.NormalizeToCenter();

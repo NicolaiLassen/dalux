@@ -10,8 +10,4 @@
         <PackageReference Include="Cloo.clSharp" Version="1.0.1" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Tests\pts" />
-    </ItemGroup>
-
 </Project>

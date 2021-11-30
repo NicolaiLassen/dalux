@@ -149,8 +149,7 @@ namespace Algorithm.Lib
                 int d,
                 Vector3 s,
                 Vector3 e,
-                global char* voxelDST,
-                global bool* frontDST
+                global char* voxelDST
             ) 
             {
                int index = get_global_id(0);     
@@ -205,9 +204,9 @@ namespace Algorithm.Lib
                             {    
                                 int index = z + d * (y + h * x);
                                 // on mesh border
-                                voxelDST[index] = 1;
-                                // is front or back
-                                frontDST[index] = isf;
+                                voxelDST[index] = 1 + (isf * 10);
+                                // if voxel is front 11 (int)
+                                // if voxel is back  01 (int)
                             }
                         }
                     }                    
@@ -274,7 +273,7 @@ namespace Algorithm.Lib
             program.Build(null, null, null, IntPtr.Zero);
 
             // SURFACE 
-            
+
             var surfaceKernel = program.CreateKernel(VoxelizeSurfaceFunctionName);
 
             // mesh vertices in
@@ -316,13 +315,7 @@ namespace Algorithm.Lib
             using var voxelDstBuffer = new ComputeBuffer<byte>(compute.Context,
                 ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, voxelDst);
             surfaceKernel.SetMemoryArgument(7, voxelDstBuffer);
-
-            var frontDst = new bool[w * h * d];
-
-            using var frontDstBuffer = new ComputeBuffer<bool>(compute.Context,
-                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer, frontDst);
-            surfaceKernel.SetMemoryArgument(8, frontDstBuffer);
-
+            
             // time
             var stopwatch = new Stopwatch();
 
@@ -335,15 +328,17 @@ namespace Algorithm.Lib
 
             // wait for completion
             compute.Queue.Finish();
-            
+
             // release data from GPU buffer
             compute.Queue.ReadFromBuffer(voxelDstBuffer, ref voxelDst, true, null);
-            compute.Queue.ReadFromBuffer(frontDstBuffer, ref frontDst, true, null);
-            
+
             // VOLUME
+            // BYTE: TODO
+            // [0](isfront) 00000 [00] (type of voxel)
+
             
             // var volumeKernel = program.CreateKernel(VoxelizeVolumeFunctionName);
-            //
+            
             Console.WriteLine($"(Voxelizer) grid size: {w}x{h}x{d}, time: {stopwatch.ElapsedMilliseconds}ms");
             stopwatch.Stop();
 

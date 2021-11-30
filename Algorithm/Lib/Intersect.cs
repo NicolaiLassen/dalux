@@ -91,10 +91,12 @@ namespace Algorithm.Lib
             //   |
             var voxelPointGrid = new byte[w, h, d];
 
-            foreach (var (pos, value) in selectedForSearch)
-            {
-                var index = pos.Z + d * (pos.Y + h * pos.X);
-            }
+            Console.WriteLine(selectedForSearch.Count);
+            
+            // foreach (var (pos, value) in selectedForSearch)
+            // {
+            //     var index = pos.Z + d * (pos.Y + h * pos.X);
+            // }
 
             Console.WriteLine(
                 $"(Intersection) grid size: {w}x{h}x{d}, time: {stopwatch.ElapsedMilliseconds}ms");
